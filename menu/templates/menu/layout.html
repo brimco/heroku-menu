@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>{% block title %}Menu Planner{% endblock %}</title>
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+
+        <!-- heart icons from: https://www.iconfinder.com/iconsets/love-1-1 -->
+        <!-- nav icons from: https://www.iconfinder.com/iconsets/glyphs -->
+        <!-- filter icon: https://www.iconfinder.com/icons/5875998/action_filter_parameters_params_preferences_setting_settings_icon -->
+        <link rel="icon" href="{% static 'images/heart.svg' %}" /> 
+
+        <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <link href='/static/styles.css' rel='stylesheet'></link>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {% block script %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="/">
+                <img src='{% static "/images/utensils.svg" %}' height="50" width="50">
+            </a>
+            <ul class="navbar-nav mr-auto header-font">
+                {% if user.is_authenticated %}
+                    <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#menus'>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class='collapse navbar-collapse' id='menus'>
+                        <li class="nav-item dropdown d-inline">
+                            <a class="nav-link" data-toggle="dropdown" href="#" role="button">
+                                <img src='{% static "/images/account.svg" %}' height="20" width="20">
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{% url 'menu:logout' %}">Logout</a>
+                            </div>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link pr-4" href='{% url "menu:recipes" %}'>Recipes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link pr-4" href="{% url 'menu:mealplans' %}">Meal Plans</a>        
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link pr-4" href='{% url "menu:groceries" %}'>Grocery List</a>
+                        </li>
+                    </div>
+
+                {% else %}
+                    <h1>Welcome!</h1>
+                {% endif %}
+            </ul>
+            <!-- search bar -->
+            {% if user.is_authenticated %}
+                <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#searches'>
+                    <img src='{% static "/images/search.svg" %}' height="30" width="30" style="vertical-align: -4px" class='p-0 m-0'> 
+                </button>
+
+                <div class='collapse navbar-collapse justify-content-end' id='searches'>
+                    <form class="form-inline my-2 my-lg-0" action='{% url "menu:recipes" %}'>
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search Tags" name="tag">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search Recipes" name="recipe">
+                        <button type="submit" class='btn btn-link m-0 p-0'>
+                            <img src='{% static "/images/search.svg" %}' height="30" width="30" style="vertical-align: -4px" class='p-0 m-0'> 
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+        </nav>
+
+        <div class='body'>
+            {% block body %}
+            {% endblock %}
+        </div>
+
+        <footer class='text-center mt-4 p-3 bg-light'>
+            <p class='text-muted font-weight-light m-0'>Bri McOmber</p>
+            <p class='text-muted font-weight-light mt-0 mb-1'>Web50 Capstone Project</p>
+            <img src='{% static "/images/utensils.svg" %}' height="30" width="30">
+        </footer>
+    </body>
+</html>
