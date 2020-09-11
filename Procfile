@@ -1,0 +1,1 @@
+web: gunicorn brimco.wsgi --log-file -
