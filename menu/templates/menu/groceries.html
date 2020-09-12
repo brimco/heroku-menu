@@ -1,0 +1,29 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+    <script src='{% static "groceries.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container text-center rounded border bg-light mt-3">
+        <div id='groceryList'></div>
+        
+        <script type='text/babel'>
+            const starting_list = '{{ starting_list }}';
+            function start() {
+                ReactDOM.render(<GroceryList starting_list={starting_list} />, document.querySelector('#groceryList'));
+            }
+
+            if( document.readyState !== 'loading' ) {
+                start();
+                
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    start();
+                })
+            }
+        </script>
+    </div>
+
+{% endblock %}

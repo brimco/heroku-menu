@@ -1,0 +1,30 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+    <script src='{% static "recipe_groceries.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container text-center rounded border bg-light mt-3">
+        <div id='ingredients'></div>
+
+        <script type='text/babel'>
+            const recipes = '{{ recipes }}';
+    
+            function start() {
+                ReactDOM.render(<RecipeGroceries recipes={recipes} />, document.querySelector('#ingredients'));
+            }
+    
+            if( document.readyState !== 'loading' ) {
+                start();
+                
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    start();
+                })
+            }
+        </script>
+    </div>
+
+{% endblock %}

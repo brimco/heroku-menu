@@ -1,9 +1,11 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from datetime import date
 import json
 import random
@@ -90,11 +92,20 @@ def recipe(request, recipe_id):
         })
 
 
-def recipe_groceries(request):
-    return HttpResponse('<h1>recipe_groceries<h1>')
+@login_required
+def recipe_groceries(request, recipe_id):
+    return render(request, 'menu/recipe_groceries.html', {
+        'recipes': json.dumps([get_str_recipes(request.user, id=recipe_id, as_dict=True)])
+    })
 
-def edit_recipe(request):
-    return HttpResponse('<h1>edit_recipe<h1>')
+@login_required
+def edit_recipe(request, recipe_id):
+    edit = get_str_recipes(request.user, id=recipe_id)
+    return render(request, 'menu/new_recipe.html', {
+        'tag_options': json.dumps([t.name for t in Tag.objects.filter(user=request.user).order_by('name')]),
+        'edit_recipe': json.loads(edit),
+        'str_edit_recipe': edit
+    })
 
 @csrf_exempt
 @login_required
@@ -189,9 +200,41 @@ def new_recipe(request, info=None):
         'tag_options': json.dumps([t.name for t in Tag.objects.filter(user=request.user).order_by('name')])
     }) 
 
-
+@csrf_exempt
+@login_required
 def groceries(request):
-    return HttpResponse('<h1>groceries<h1>')
+    if request.method == 'PUT':
+        info = json.loads(request.body.decode("utf-8"))
+
+        obj = Food.objects.get_or_create(user=request.user, name=info['name'], defaults={'name': info['name'], 'user': request.user})[0] 
+        was_added = False
+        if 'on_grocery_list' in info:
+            if obj.on_grocery_list == False:
+                was_added = True
+            obj.on_grocery_list = info['on_grocery_list']
+        
+        if 'category' in info:
+            category_obj = Category.objects.get_or_create(user=request.user, name__iexact=info['category'], defaults={'name': info['category'], 'user': request.user})[0]
+            obj.category = category_obj
+
+        obj.save()
+
+        category = 'Other'
+        if obj.category:
+            category = obj.category.name
+
+        return JsonResponse({"category": category, "id": obj.id, "was_added": was_added})
+
+    groceries = []
+    for category in Category.objects.filter(user=request.user).order_by('name'):
+        groceries.append({
+            'name': category.name,
+            'list': Food.objects.filter(user=request.user, category=category, on_grocery_list=True)
+        })
+    return render(request, 'menu/groceries.html', {
+        'starting_list': get_starting_grocery_list(request.user)
+    })
+
 
 @csrf_exempt
 @login_required
@@ -241,8 +284,12 @@ def new_meal_plan(request):
         'all_recipes': Recipe.objects.filter(user=request.user).order_by('name')
     })
 
-def recipe_meal_plan(request):
-    return HttpResponse('<h1>recipe_meal_plan<h1>')
+@login_required
+def recipe_meal_plan(request, recipe_id):
+    return render(request, 'menu/new_meal_plan.html', {
+        'all_recipes': Recipe.objects.filter(user=request.user).order_by('name'),
+        'selected': [Recipe.objects.get(user=request.user, pk=recipe_id)]
+    })
 
 @login_required
 def focus_meal_plans(request, meal_plan_id):
@@ -263,8 +310,22 @@ def edit_meal_plan(request, meal_plan_id):
         'notes': mealplan.notes
     })
 
+@login_required
 def meal_plan_groceries(request):
-    return HttpResponse('<h1>meal_plan_groceries<h1>')
+    meal_plans = MealPlan.objects.filter(user=request.user).order_by('date')
+
+    recipes = []
+    ids = []
+    for plan in meal_plans:
+        for recipe in plan.recipes.all():
+            if recipe.id not in ids:
+                recipes.append(get_str_recipes(request.user, id=recipe.id, as_dict=True))
+                ids.append(recipe.id)
+
+    return render(request, 'menu/recipe_groceries.html', {
+        'recipes': json.dumps(recipes)
+    })
+
 
 def login_view(request):
     if request.method == "POST":
@@ -290,7 +351,30 @@ def logout_view(request):
     
 
 def register(request):
-    return HttpResponse('<h1>register<h1>')
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password != confirmation:
+            return render(request, "menu/register.html", {
+                "message": "Passwords must match."
+            })
+
+        # Attempt to create new user
+        try:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+        except IntegrityError:
+            return render(request, "menu/register.html", {
+                "message": "Username already taken."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("menu:index"))
+    return render(request, "menu/register.html")
+
 
 ## tools
 
@@ -339,3 +423,19 @@ def get_str_recipes(user, id=None, as_dict=False):
     if as_dict:
         return recipe_list
     return json.dumps(recipe_list)
+
+def get_starting_grocery_list(user):
+    objs = Food.objects.filter(user=user, on_grocery_list=True).order_by('category__name')
+    lst = {}
+    for obj in objs:
+        category = 'Other'
+        if obj.category:
+            category = obj.category.name
+
+        if category not in lst:
+            lst[category] = []
+        lst[category].append({
+            'name': obj.name,
+            'category': category
+        })
+    return json.dumps(lst)

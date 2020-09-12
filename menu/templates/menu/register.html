@@ -1,0 +1,53 @@
+{% extends "menu/layout.html" %}
+
+{% block body %}
+    <div class="text-center rounded border bg-light mt-3 mx-auto" style='max-width: 50em'>
+        <h2 class='py-4'>Register</h2>
+        
+        {% if message %}
+            <div class='alert alert-warning mx-5 p-1'>{{ message }}</div>
+        {% endif %}
+
+        <form action="{% url 'menu:register' %}" method="post" class="px-5">
+            {% csrf_token %}
+            <!-- username -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Username</span>
+                </div>
+                <input class="form-control" autofocus type="text" name="username">
+            </div>
+
+            <!-- email -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Email</span>
+                </div>
+                <input class="form-control" type="email" name="email">
+            </div>
+
+            <!-- Password -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Password</span>
+                </div>
+                <input class="form-control" type="password" name="password">
+            </div>
+
+            <!-- confirm password -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Confirm Password</span>
+                </div>
+                <input class="form-control" type="password" name="confirmation">
+            </div>
+
+            <!-- submit -->
+            <input class="btn btn-outline-info" type="submit" value="Register">
+        </form>    
+        
+        <div class="p-4">
+            Already have an account? <a class='text-info' href="{% url 'menu:login' %}">Log In here.</a>
+        </div>
+    </div>
+{% endblock %}
