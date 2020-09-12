@@ -1,0 +1,64 @@
+
+
+.form-control:focus {
+    border-color: #44a6c4; 
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(68, 166, 196, 0.8);
+  }
+
+@font-face {
+  font-family: 'Comfortaa-Regular';
+  src: local('Comfortaa-Regular'),
+        url('../static/fonts/Comfortaa-Regular.ttf') format("truetype");
+}
+
+h1,
+h2,
+h3, 
+h4,
+h5,
+h6,
+.header-font {
+  font-family: Comfortaa-Regular, sans-serif;
+}
+
+@media (max-width: 760px) {
+  #newRecipeName,
+  #newRecipeName > span,
+  #newRecipeTag,
+  #newRecipeTag > span {
+    width: 100%;
+  }
+
+  .mobile-shrink {
+    font-size: 80%;
+  }
+  .mobile-shrink-lots {
+    font-size: 70%;
+  }
+
+  .mobile-center {
+    text-align: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-hidden {
+    display: none;
+  }
+
+  .mobile-grow {
+    font-size: 120%;
+  }
+
+  .mobile-no-left-auto {
+    margin-left: inherit !important;
+  }
+
+  .mobile-max-width {
+    max-width: 12em;
+  }
+}
+
+
+
