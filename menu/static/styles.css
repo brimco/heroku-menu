@@ -83,3 +83,8 @@ body {
   height: 5.5em;   /* Height of the footer */
   padding: 1em;
 }
+
+.strikethrough:checked + span{
+  text-decoration: line-through;
+  color: rgb(177, 177, 177);
+}

@@ -190,7 +190,7 @@ class RecipeInfo extends React.Component {
         for (let i of this.state.recipe.ingredients) {
             ingredients.push(
                 <div key={i.food}>
-                    <input type='checkbox' className="text-left ml-2"></input>
+                    <input type='checkbox' className="text-left ml-3 strikethrough"></input>
                     <span className='ml-2'>{this.ingredient_string(i)}</span>
                 </div>
             )
@@ -201,7 +201,10 @@ class RecipeInfo extends React.Component {
         let step_num = 1;
         for (let step of this.state.recipe.steps) {
             steps.push(
-                <li key={step_num}>{step}</li>
+                <div key={step_num}>
+                    <input type='checkbox' className='text-left ml-3 strikethrough'></input>
+                    <span key={step_num} className='ml-2'>{step_num}. {step}</span>
+                </div>
             )
             step_num++;
         }
@@ -221,9 +224,9 @@ class RecipeInfo extends React.Component {
                     </div>
                     <div className='col-sm m-2 p-2 rounded border bg-white'>
                         <h4 className="m-2">Steps</h4> 
-                        <ol className="text-left">
+                        <div className="text-left">
                             {steps}
-                        </ol>
+                        </div>
                     </div>
                 </div>
             </div>
