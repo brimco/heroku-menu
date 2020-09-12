@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from datetime import date
 import json
 import random
@@ -138,7 +139,7 @@ def new_recipe(request, info=None):
         for tag in data['tags']:
             try: 
                 tag_obj = Tag.objects.get(user=request.user, name=tag)
-            except Tag.DoesNotExist:
+            except ObjectDoesNotExist:
                 tag_obj = Tag(name=tag, user=request.user)
                 tag_obj.save()
             tag_objs.append(tag_obj)
@@ -150,7 +151,7 @@ def new_recipe(request, info=None):
             # need to create a new ingredient for every one. see if food is already make
             try: 
                 food_obj = Food.objects.get(user=request.user, name=i['ingredient'])
-            except Food.DoesNotExist:
+            except ObjectDoesNotExist:
                 food_obj = Food.objects.create(name=i['ingredient'], user=request.user)
                 food_obj.save()
             
