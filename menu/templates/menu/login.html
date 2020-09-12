@@ -1,0 +1,39 @@
+{% extends "menu/layout.html" %}
+
+{% block body %}
+
+    <div class="text-center rounded border bg-light mt-3 mx-auto" style='max-width: 50em'>
+        <h2 class='py-4'>Login</h2>
+
+        {% if message %}
+            <div class='alert alert-warning mx-5 p-1'>{{ message }}</div>
+        {% endif %}
+        
+        <form action="{% url 'menu:login' %}" method="post" class="px-5">
+            {% csrf_token %}
+
+            <!-- username -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Username</span>
+                </div>
+                <input autofocus class="form-control" type="text" name="username">
+            </div>
+
+            <!-- password -->
+            <div class='input-group mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Password</span>
+                </div>
+                <input class="form-control" type="password" name="password">
+            </div>
+
+            <!-- submit -->
+            <input class="btn btn-outline-info" type="submit" value="Login">
+        </form>            
+
+        <div class="p-4">
+            Don't have an account? <a class='text-info' href="{% url 'menu:register' %}">Register here.</a>
+        </div>
+    </div>
+{% endblock %}

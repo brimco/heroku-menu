@@ -1,5 +1,7 @@
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from datetime import date
 import json
 import random
@@ -8,6 +10,7 @@ from .models import User, Tag, Category, Food, Ingredient, Recipe, MealPlan
 
 # Create your views here.
 
+@login_required
 def index(request):
     if request.user.is_anonymous:
         return HttpResponseRedirect(reverse('menu:login'))
@@ -95,10 +98,27 @@ def meal_plan_groceries(request):
     return HttpResponse('<h1>meal_plan_groceries<h1>')
 
 def login_view(request):
-    return HttpResponse('<h1>login_view<h1>')
+    if request.method == "POST":
+        # Attempt to sign user in
+        username = request.POST["username"]
+        password = request.POST["password"]
+        user = authenticate(request, username=username, password=password)
+
+        # Check if authentication successful
+        if user is not None:
+            login(request, user)
+            return HttpResponseRedirect(reverse("menu:index"))
+        return render(request, "menu/login.html", {
+            "message": "Invalid username and/or password."
+        })
+    return render(request, "menu/login.html")
+
 
 def logout_view(request):
-    return HttpResponse('<h1>logout_view<h1>')
+    logout(request)
+    # return HttpResponse('logout page')
+    return HttpResponseRedirect(reverse("menu:index"))
+    
 
 def register(request):
     return HttpResponse('<h1>register<h1>')
