@@ -1,0 +1,61 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+    <script src='{% static "all_recipes.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container text-center rounded border bg-light mt-3">
+        <div class="row">
+            <div class="col text-left pt-3 px-3">
+                <a href='{% url "menu:newrecipe" %}' class='btn btn-sm btn-outline-info'>    
+                    <img src='{% static "/images/add.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
+                    <span>New Recipe</span>
+                </a>                 
+            </div>
+            <div class="col text-right pt-3 px-3">
+                <button type='button' data-toggle='collapse' data-target='#filters' class='btn btn-sm btn-outline-info' id='filterBtn'>
+                    <img src='{% static "/images/filter.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
+                    <span>Filter</span>
+                </button>
+            </div>
+        </div>
+        <h1 className="text-center">
+            <img src='{% static "/images/book.svg" %}' height="40" width="40" style='vertical-align: bottom'></img>
+            Recipes
+            </h1>
+        <div id='search'>
+        </div>
+
+        <script type='text/babel'>
+            // recipes formatted as id: recipe name (JSON converted to string)
+            const all_recipes = '{{ recipes }}';
+            const search_recipes = '{{ search_recipes }}';
+            const search_tags = '{{ search_tags }}';
+
+            function start() {
+                ReactDOM.render(<Search 
+                                    all_recipes={all_recipes} 
+                                    search_recipes={search_recipes} 
+                                    search_tags={search_tags} />, 
+                                    document.querySelector('#search'));
+                
+                // click filter button if search_recipes or search_tags
+                if (search_recipes != '' || search_tags != '') {
+                    document.querySelector('#filterBtn').click();
+                }
+            }
+
+            if( document.readyState !== 'loading' ) {
+                start();
+                
+            } else {
+                document.addEventListener('DOMContentLoaded', function () {
+                    start();
+                })
+            }
+        </script>
+    </div>
+    
+{% endblock %}

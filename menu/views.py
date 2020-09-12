@@ -1,7 +1,8 @@
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from datetime import date
 import json
 import random
@@ -61,11 +62,30 @@ def index(request):
         'grocery_categories': grocery_categories
     })
 
+@login_required
 def recipes(request):
-    return HttpResponse('<h1>recipes<h1>')
+    search_recipes = request.GET.get('recipe', '')
+    search_tags = request.GET.get('tag', '')
+    return render(request, 'menu/all_recipes.html', {
+        'recipes': get_str_recipes(user=request.user),
+        'search_recipes': search_recipes,
+        'search_tags': search_tags
+    })
 
-def recipe(request):
-    return HttpResponse('<h1>recipe<h1>')
+@csrf_exempt
+@login_required
+def recipe(request, recipe_id):
+    if request.method == 'PUT':
+        # delete recipe
+        info = json.loads(request.body.decode("utf-8"))
+        Recipe.objects.filter(user=request.user, pk=info['id']).delete()
+        return JsonResponse({'deleted': True})
+
+    return render(request, 'menu/recipe.html', {
+        'recipe': Recipe.objects.get(user=request.user, pk=recipe_id),
+        'recipe_str': get_str_recipes(request.user, id=recipe_id)
+        })
+
 
 def recipe_groceries(request):
     return HttpResponse('<h1>recipe_groceries<h1>')
@@ -73,8 +93,99 @@ def recipe_groceries(request):
 def edit_recipe(request):
     return HttpResponse('<h1>edit_recipe<h1>')
 
-def new_recipe(request):
-    return HttpResponse('<h1>new_recipe<h1>')
+@csrf_exempt
+@login_required
+def new_recipe(request, info=None):
+    if request.method == 'POST':
+        # save new/edited recipe
+        data = json.loads(request.body)
+
+        # prep time, cooktime, servings
+        ints = ['preptime', 'cooktime', 'servings']
+        for each in ints:
+            if data[each] == '':
+                data[each] = None
+            else:
+                try:
+                    data[each] = int(data[each])
+                except Exception as err:
+                    print('error:', err)
+                    data[each] = None
+
+        # get recipe if it's an edit (if there is an id given)
+        if data['id']:
+            new_recipe = Recipe.objects.get(user=request.user, pk=data['id'])
+            new_recipe.name = data['name']
+            new_recipe.prep_time = data['preptime']
+            new_recipe.cook_time = data['cooktime']
+            new_recipe.source = data['source']
+            new_recipe.servings = data['servings']
+
+        else:
+            # save new recipe
+            new_recipe = Recipe(
+                user = request.user,
+                name = data['name'],
+                prep_time = data['preptime'],
+                cook_time = data['cooktime'],
+                source = data['source'],
+                servings = data['servings'],
+            )
+        new_recipe.save()
+
+        # save tag (need to get list of objs)
+        tag_objs = []
+        for tag in data['tags']:
+            try: 
+                tag_obj = Tag.objects.get(user=request.user, name=tag)
+            except Tag.DoesNotExist:
+                tag_obj = Tag(name=tag, user=request.user)
+                tag_obj.save()
+            tag_objs.append(tag_obj)
+        new_recipe.tags.set(tag_objs)
+
+        # save ingredient objs
+        ingredient_objs = []
+        for i in data['ingredients']:
+            # need to create a new ingredient for every one. see if food is already make
+            try: 
+                food_obj = Food.objects.get(user=request.user, name=i['ingredient'])
+            except Food.DoesNotExist:
+                food_obj = Food.objects.create(name=i['ingredient'], user=request.user)
+                food_obj.save()
+            
+            amt = ''
+            if 'amount' in i:
+                amt = i['amount']
+            
+            unt = ''
+            if 'unit' in i:
+                unt = i['unit']
+
+            dsc = ''
+            if 'description' in i:
+                dsc = i['description']
+            
+            new_ingredient = Ingredient(
+                user = request.user,
+                food = food_obj,
+                amount = amt,
+                unit = unt, 
+                description = dsc
+            )
+            new_ingredient.save()
+            ingredient_objs.append(new_ingredient)
+        new_recipe.ingredients.set(ingredient_objs)
+
+        # save steps
+        new_recipe.set_steps(data['steps'])
+        new_recipe.save()
+        return JsonResponse({"id": new_recipe.id})
+
+    return render(request, 'menu/new_recipe.html', {
+        'tag_options': json.dumps([t.name for t in Tag.objects.filter(user=request.user).order_by('name')])
+    }) 
+
 
 def groceries(request):
     return HttpResponse('<h1>groceries<h1>')

@@ -1,0 +1,100 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+    <script src='{% static "recipe.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container text-center rounded border bg-light mt-3">
+        <div class="row">
+            <span class="col-md text-left pt-3 px-3 mobile-center">
+                <a class="btn btn-outline-info btn-sm" href="{% url 'menu:edit_recipe' recipe.id %}">
+                    <img src='{% static "images/edit.svg" %}' height="17" width="17" style='vertical-align: -2px' class='p-0 m-0'>
+                    Edit
+                </a>
+                <button class="btn btn-outline-info btn-sm ml-2" onclick="verify_delete()">
+                    <img src='{% static "images/trash.svg" %}' height="15" width="15" style='vertical-align: -2px' class='p-0 m-0'>
+                    Delete
+                </button>
+            </span>
+            <span class="col-md text-right pt-3 px-3">
+                <a class="btn btn-outline-info btn-sm" href="{% url 'menu:recipe_groceries' recipe.id %}">
+                    <img src='{% static "images/list.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                    Add to Grocery List
+                </a>
+                <a class="btn btn-outline-info btn-sm ml-2" href="{% url 'menu:recipe_meal_plan' recipe.id %}">
+                    <img src='{% static "images/calendar.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                    Add to Meal Plan
+                </a>
+            </span>
+        </div>
+        <h1 class='pt-3'>{{ recipe.name }}</h1>
+
+        {% for tag in recipe.tags.all %}
+            <span class='badge badge-pill badge-info font-weight-light mr-2 d-inline'>{{ tag }} </span>
+        {% endfor %}
+    
+        <div id='recipeInfo'></div>
+        
+        <!-- verify delete modal -->
+        <div class="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h5 class="text-center font-weight-normal">
+                            Are you sure you want to delete this recipe?
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-info deleteButton" data-dismiss="modal" onclick="delete_recipe('{{ recipe.id}}')">
+                            <img src='{% static "images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Delete
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            <img src='{% static "images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function verify_delete() {
+            $('#deleteModal').modal('show');
+        }
+        function delete_recipe(recipe_id) {
+            console.log(`delete: ${recipe_id}`)
+            // send to database to delete
+            fetch(`/recipes/${recipe_id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    id: recipe_id
+                })
+            })
+            .then(response => {
+                // redirect to recipes page
+                location.href = '/recipes';
+            })            
+        }
+    </script>
+    <script type='text/babel'>
+        const recipe = '{{ recipe_str }}';
+
+        function start() {
+            ReactDOM.render(<RecipeInfo recipe={recipe} />, document.querySelector('#recipeInfo'));
+        }
+
+        if( document.readyState !== 'loading' ) {
+            start();
+            
+        } else {
+            document.addEventListener('DOMContentLoaded', function () {
+                start();
+            })
+        }
+    </script>
+    
+{% endblock %}
