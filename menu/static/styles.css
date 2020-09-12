@@ -60,5 +60,26 @@ h6,
   }
 }
 
-
-
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+#layout-container {
+  min-height: 100%;
+  position: relative;
+}
+#body {
+  padding: 0px;
+  padding-bottom: 5.5em;   /* Height of the footer */
+}
+#footer {
+  text-align: center;
+  background-color: rgb(245, 245, 245);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 5.5em;   /* Height of the footer */
+  padding: 1em;
+}
