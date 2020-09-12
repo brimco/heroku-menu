@@ -137,7 +137,7 @@ class Ingredients extends React.Component {
         items.push(
             <div key='button' className={btn_align}>
                 <button type='button' onClick={this.add_ingredient} className='btn btn-outline-info btn-sm'>
-                    <img src='{% static "/images/add.svg" %}' height="15" width="15" style={{verticalAlign: "-2px"}} className='mr-1'></img>
+                    <img src={this.props.add_src} height="15" width="15" style={{verticalAlign: "-2px"}} className='mr-1'></img>
                     <span>Add Ingredient</span>
                 </button>
             </div>
@@ -223,7 +223,7 @@ class Steps extends React.Component {
         items.push(
             <div key='button' className={btn_align}>
                 <button type='button' onClick={this.add_step} className='btn btn-outline-info btn-sm'>
-                    <img src='{% static "/images/add.svg" %}' height="15" width="15" style={{verticalAlign: "-2px"}} className='mr-1'></img>
+                    <img src={this.props.add_src} height="15" width="15" style={{verticalAlign: "-2px"}} className='mr-1'></img>
                     <span>Add Step</span>
                 </button>
             </div>
@@ -359,7 +359,7 @@ class Tags extends React.Component {
                 <input type="text" className='form-control' id='new_tag_field' style={{width: '10%'}} onKeyDown={this.handleKeyDown}></input>
                 <div className='input-group-append'>
                     <button className="btn btn-outline-info" id='new_tag_btn' type="button" onClick={this.create_new_tag}>
-                        <img src='{% static "/images/add.svg" %}' height="20" width="20" style={{verticalAlign: "-4px"}} className='p-0 m-0'></img>
+                        <img src={this.props.add_src} height="20" width="20" style={{verticalAlign: "-4px"}} className='p-0 m-0'></img>
                     </button>
                 </div>
             </div>

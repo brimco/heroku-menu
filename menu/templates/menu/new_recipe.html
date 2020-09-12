@@ -106,13 +106,13 @@
 
     <script type='text/babel'>
         const tag_options = '{{ tag_options }}';
-
         const edit_recipe = '{{ str_edit_recipe }}';
+        const add_src = '{% static "/images/add.svg" %}';
 
         function start() {
-            ReactDOM.render(<Ingredients edit_recipe={edit_recipe} />, document.querySelector('#ingredients'));
-            ReactDOM.render(<Steps edit_recipe={edit_recipe} />, document.querySelector('#steps'));
-            ReactDOM.render(<Tags tag_options={tag_options} edit_recipe={edit_recipe} />, document.querySelector('#tags'));
+            ReactDOM.render(<Ingredients edit_recipe={edit_recipe} add_src={add_src} />, document.querySelector('#ingredients'));
+            ReactDOM.render(<Steps edit_recipe={edit_recipe} add_src={add_src} />, document.querySelector('#steps'));
+            ReactDOM.render(<Tags tag_options={tag_options} edit_recipe={edit_recipe} add_src={add_src} />, document.querySelector('#tags'));
         }
 
         if( document.readyState !== 'loading' ) {
