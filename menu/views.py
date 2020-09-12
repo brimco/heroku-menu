@@ -31,12 +31,14 @@ def index(request):
         year = plan_date.strftime('%Y')
         plan_date = f'{month} {day}, {year}'
         
+        print('start')
         plan = json.dumps({
                 'id': plans[indx].id,
                 'date': plan_date,
                 'recipes': [{'name': r.name, 'id': r.id} for r in plans[indx].recipes.all()],
                 'notes': plans[indx].notes
             })
+        print(f'stop. plan: {plan}')
     else: 
         plan = None
 

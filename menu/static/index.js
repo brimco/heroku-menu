@@ -90,7 +90,7 @@ function fillRandomRecipe(random_recipe_str) {
 }
 
 function fillUpcomingMealPlan(meal_plan_str) {
-    const str = meal_plan_str.replace(/&quot;/g, '"');
+    const str = meal_plan_str.replace(/&quot;/g, '"').replace(/\n/g, ". ").replace(/\t/g, " - ")
 
     let meal_plan;
     if (str == 'None') {
