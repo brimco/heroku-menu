@@ -190,20 +190,75 @@ def new_recipe(request, info=None):
 def groceries(request):
     return HttpResponse('<h1>groceries<h1>')
 
+@csrf_exempt
+@login_required
 def mealplans(request):
-    return HttpResponse('<h1>mealplans<h1>')
+    if request.method == 'PUT':
+        # delete meal plan
+        info = json.loads(request.body.decode("utf-8"))
+        if info['id'] == 'all':
+            for m in MealPlan.objects.filter(user=request.user).all():
+                m.delete()
+        else:
+            MealPlan.objects.filter(user=request.user, pk=info['id']).delete()
 
+    return render(request, 'menu/mealplans.html', {
+        'mealplans': MealPlan.objects.filter(user=request.user).order_by('date')
+    })
+
+@csrf_exempt
+@login_required
 def new_meal_plan(request):
-    return HttpResponse('<h1>new_meal_plan<h1>')
+    if request.method == 'POST':
+        # save new/edited meal plan
+        data = json.loads(request.body)
+
+        # get meal plan if it's an edit (if there is an id given)
+        if data['id']:
+            meal_plan = MealPlan.objects.get(user=request.user, pk=data['id'])
+            meal_plan.set_date(data['date'])
+            meal_plan.notes = data['notes']
+
+        else:
+            # save new meal plan
+            meal_plan = MealPlan(notes = data['notes'], user=request.user)
+            meal_plan.set_date(data['date'])
+        meal_plan.save()
+
+        # save recipes (need to get list of objs)
+        recipe_objs = []
+        for recipe in data['recipes']:
+            recipe_obj = Recipe.objects.get(user=request.user, name=recipe)
+            recipe_objs.append(recipe_obj)
+
+        meal_plan.recipes.set(recipe_objs)
+        return JsonResponse({"id": meal_plan.id})
+
+    return render(request, 'menu/new_meal_plan.html', {
+        'all_recipes': Recipe.objects.filter(user=request.user).order_by('name')
+    })
 
 def recipe_meal_plan(request):
     return HttpResponse('<h1>recipe_meal_plan<h1>')
 
-def focus_meal_plans(request):
-    return HttpResponse('<h1>focus_meal_plans<h1>')
+@login_required
+def focus_meal_plans(request, meal_plan_id):
+    return render(request, 'menu/mealplans.html', {
+        'mealplans': MealPlan.objects.filter(user=request.user).order_by('date'),
+        'focus': meal_plan_id
+    })
 
-def edit_meal_plan(request):
-    return HttpResponse('<h1>edit_meal_plan<h1>')
+@login_required
+def edit_meal_plan(request, meal_plan_id):
+    mealplan = MealPlan.objects.get(pk=meal_plan_id)
+
+    return render(request, 'menu/new_meal_plan.html', {
+        'all_recipes': Recipe.objects.filter(user=request.user).order_by('name'),
+        'id': mealplan.id,
+        'date': mealplan.date,
+        'selected': mealplan.recipes.all(),
+        'notes': mealplan.notes
+    })
 
 def meal_plan_groceries(request):
     return HttpResponse('<h1>meal_plan_groceries<h1>')

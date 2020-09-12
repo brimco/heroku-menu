@@ -1,0 +1,156 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block body %}
+    <div>
+        <div class="container text-center rounded border bg-light mt-3">
+            <!-- title and buttons -->
+            <div class="row">
+                <div class="col-sm text-left pt-3 mobile-center">
+                    <a href='{% url "menu:new_meal_plan" %}' class='btn btn-sm btn-outline-info'>
+                        <img src='{% static "/images/add.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
+                        New Meal Plan
+                    </a>  
+                    <button class='btn btn-sm btn-outline-info ml-2' onclick=(verify_delete_all())>
+                        <img src='{% static "/images/trash.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
+                        Delete All
+                    </button> 
+                </div>
+                <div class='col-sm text-right py-3 mobile-center'>
+                    <a class="btn btn-outline-info btn-sm" href="{% url 'menu:meal_plan_groceries' %}">
+                        <img src='{% static "images/list.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                        Add to Grocery List
+                    </a>                  
+                </div>
+            </div>
+            <h1>
+                <img src='{% static "/images/calendar.svg" %}' height="40" width="40" style="vertical-align: -5px"> 
+                Meal Plans
+            </h1>
+
+            <!-- headers -->
+            <div key='headers' class='font-weight-light row mx-3 pl-2 pb-2 text-left mobile-hidden'>
+                <span class='col-sm-2'>Date</span>
+                <span class='col-sm-4'>Recipes</span>
+                <span class='col-sm-4'>Notes</span>
+            </div>
+
+            <div id='mealplans'>
+            <!-- meal plans -->
+                {% for mealplan in mealplans %}
+                    <div class='border pl-2 py-2 mx-3 mb-3 rounded row position-relative bg-white text-left' id='{{ mealplan.id }}'>
+                        <span class='col-sm-2 mobile-grow'>
+                            {{ mealplan.date }}
+                        </span>
+                        <span class='col-sm-4'>
+                            {% for recipe in mealplan.recipes.all %}
+                                <div>
+                                    <a href="{% url 'menu:recipe' recipe.id %}" class="text-info">{{ recipe }}</a>
+                                </div>
+                            {% endfor %}
+                        </span>
+                        <span class='col-sm-4'>
+                            {{ mealplan.notes }}
+                        </span>
+                        <span class="col-sm-2 text-right">
+                            <a class="btn btn-link" href="{% url 'menu:edit_meal_plan' mealplan.id %}">
+                                <img src='{% static "/images/edit.svg" %}' height="18" width="18" style="vertical-align: -5px"> 
+                            </a>
+                            <button class="btn btn-link p-0" onclick="verify_delete(id='{{ mealplan.id }}')">
+                                <img src='{% static "/images/trash.svg" %}' height="18" width="18" style="vertical-align: -5px"> 
+                            </button>
+                        </span>
+                    </div>
+                {% empty %}
+                    <h5 class="text-left p-3">
+                        No Meal Plans
+                    </h5>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- verify delete modal -->
+        <div class="modal fade" id="deleteModal" tabIndex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h5 class="text-center font-weight-normal">
+                            Are you sure you want to delete this meal plan?
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-info deleteButton" data-dismiss="modal" onclick="delete_meal_plan(this.id)">
+                            <img src='{% static "images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Delete
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            <img src='{% static "images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- verify delete all modal -->
+        <div class="modal fade" id="deleteAllModal" tabIndex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h5 class="text-center font-weight-normal">
+                            Are you sure you want to delete all the meal plan?
+                        </h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-info deleteButton" data-dismiss="modal" onclick="delete_meal_plan('all')">
+                            <img src='{% static "images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Delete All
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
+                            <img src='{% static "images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if focus %}
+            <script type='text/babel'>focus_on('{{ focus }}')</script>
+        {% endif %}
+    </div>  
+
+    <script>
+        function focus_on(meal_plan_id) {
+            $('#'.concat(meal_plan_id)).css('box-shadow', '0px 0px 10px 3px rgba(91,192,222,0.5)');
+        }
+
+        function verify_delete(id) {
+            $('.deleteButton').attr('id', id)
+            $('#deleteModal').modal('show');
+        }
+
+        function verify_delete_all() {
+            $('#deleteAllModal').modal('show');
+        }
+
+        function delete_meal_plan(mealplan_id) {
+            // send to database to delete
+            fetch(`/mealplans`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    id: mealplan_id
+                })
+            })
+
+            // remove from page
+            if (mealplan_id == 'all') {
+                $('#mealplans').empty();
+                $('#mealplans').append('<h5 class="text-left p-3">No Meal Plans</h5>')
+            } else {
+                $('#'.concat(mealplan_id)).remove();
+                if ($('#mealplans').children().length == 0) {
+                    $('#mealplans').append('<h5 class="text-left p-3">No Meal Plans</h5>')
+                }
+            }
+        }
+    </script>
+    
+{% endblock %}

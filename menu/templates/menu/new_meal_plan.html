@@ -1,0 +1,103 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+    <script src='{% static "new_meal_plan.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class='container rounded border bg-light mt-3 pb-3'>
+
+        {% if id %}
+            <h1 class='text-center my-3'>
+                <img src='{% static "/images/calendar.svg" %}' height="40" width="40" style="vertical-align: -5px"> 
+                <span class='mobile-shrink-lots'>Edit Meal Plan</span>
+            </h1>
+        {% else %}
+            <h1 class='text-center my-3'>
+                <img src='{% static "/images/calendar.svg" %}' height="40" width="40" style="vertical-align: -5px"> 
+                <span class='mobile-shrink-lots'>New Meal Plan</span>
+            </h1>
+        {% endif %}
+
+        <form style='width: 70%;' class='mx-auto' action="{% url 'menu:new_meal_plan' %}" method='POST' autocomplete="off">
+            {% csrf_token %}
+
+            <!-- date -->
+            <div class='input-group input-group-sm mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Date</span>
+                </div>
+                <input type="date" class='form-control' id='date'>
+            </div>
+
+            <!-- recipes -->
+            <div class='input-group input-group-sm mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Recipes</span>
+                </div>
+                <select multiple class='form-control' size='8'>
+                    {% for recipe in all_recipes %}
+                        {% if recipe in selected %}
+                            <option selected class='recipes' value='{{ recipe }}'>{{ recipe }}</option>
+                        {% else %}
+                            <option class='recipes' value='{{ recipe }}'>{{ recipe }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Notes -->
+            <div class='input-group input-group-sm mb-3'>
+                <div class='input-group-prepend'>
+                    <span class='input-group-text'>Notes</span>
+                </div>
+                <textarea class='form-control' id='notes'></textarea>
+            </div> 
+
+            <!-- submit -->
+            {% if id %}
+                <!-- editing a meal plans -->
+                <div class='text-center'>
+                    <button type='button' class='btn btn-outline-info' onclick="submit_new_meal_plan(meal_plan_id='{{ id }}')">
+                        <img src='{% static "/images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Save</span>
+                    </button>
+                    <a href='{% url "menu:mealplans" %}' class='btn btn-outline-secondary ml-2'>
+                        <img src='{% static "/images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            {% elif selected|length == 1 %}
+                <!-- came from a recipe page to create new plan -->
+                <div class='text-center'>
+                    <button type='button' class='btn btn-outline-info' onclick="submit_new_meal_plan()">
+                        <img src='{% static "/images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Create Meal Plan</span>
+                    </button>
+                    <a class='btn btn-outline-secondary my-3' href='{% url "menu:recipe" selected.0.id %}'>
+                        <img src='{% static "/images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            {% else %}
+                <!-- create new plan -->
+                <div class='text-center'>
+                    <button type='button' class='btn btn-outline-info' onclick="submit_new_meal_plan()">
+                        <img src='{% static "/images/check.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Create Meal Plan</span>
+                    </button>
+                    <a class='btn btn-outline-secondary my-3' href='{% url "menu:mealplans" %}'>
+                        <img src='{% static "/images/close.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'></img>
+                        <span>Cancel</span>
+                    </a>
+                </div>
+            {% endif %}
+        </form>
+        {% if id %}
+            <script type='text/babel'>set_edit_values('{{ date }}', '{{ notes }}');</script>
+        {% else %}
+            <script type='text/babel'>set_default_values();</script>
+        {% endif %}
+    </div>
+{% endblock %}
