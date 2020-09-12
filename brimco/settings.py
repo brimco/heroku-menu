@@ -27,7 +27,7 @@ SECRET_KEY = ')tr3c#qrzx(3#woom)mj-l!d3c%!6he%k&1%0=9n3%n962-yp6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['brimenu2.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['brimenu.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
