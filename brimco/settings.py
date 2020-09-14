@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+from .secret_settings import *  # imports SECRET_KEY
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -21,13 +22,10 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')tr3c#qrzx(3#woom)mj-l!d3c%!6he%k&1%0=9n3%n962-yp6'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['brimenu.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
