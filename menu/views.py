@@ -257,10 +257,10 @@ def mealplans(request):
 @login_required
 def new_meal_plan(request):
     if request.method == 'POST':
-        data['notes'] = date['notes'].rstrip()
         try:
             # save new/edited meal plan
             data = json.loads(request.body)
+            data['notes'] = data['notes'].rstrip()
 
             # get meal plan if it's an edit (if there is an id given)
             if data['id']:
