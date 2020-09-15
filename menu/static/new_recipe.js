@@ -7,8 +7,7 @@ class Ingredients extends React.Component {
 
         // check if editing
         if (this.props.edit_recipe) {
-            let str = this.props.edit_recipe.replace(/&quot;/g, '"')
-            edit_recipe = JSON.parse(str)
+            edit_recipe = str_to_dict(this.props.edit_recipe)
 
             // add steps
             if (edit_recipe.ingredients.length > 0) {
@@ -159,8 +158,7 @@ class Steps extends React.Component {
         let edit_recipe = null;
         let num_steps = 1;
         if (this.props.edit_recipe) {
-            let str = this.props.edit_recipe.replace(/&quot;/g, '"')
-            edit_recipe = JSON.parse(str)
+            edit_recipe = str_to_dict(this.props.edit_recipe)
 
             // add steps
             if (edit_recipe.steps.length > 0) {
@@ -241,15 +239,13 @@ class Steps extends React.Component {
 class Tags extends React.Component {
     constructor(props) {
         super(props);
-        let str = this.props.tag_options.replace(/&quot;/g, '"')
-        let tag_options = JSON.parse(str)
+        tag_options = str_to_dict(this.props.tag_options)
 
         let edit_recipe = null;
         let current_tags = [];
         // set up to edit if editing
         if (this.props.edit_recipe) {
-            str = this.props.edit_recipe.replace(/&quot;/g, '"')
-            edit_recipe = JSON.parse(str)
+            edit_recipe = str_to_dict(this.props.edit_recipe)
             
             // set current and options tags
             for (let tag of edit_recipe.tags) {

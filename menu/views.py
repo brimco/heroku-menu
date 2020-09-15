@@ -64,7 +64,7 @@ def index(request):
     return render(request, 'menu/index.html', {
         'random_recipe': random_recipe,
         'upcoming_meal_plan': plan,
-        'grocery_categories': grocery_categories
+        'grocery_categories': json.dumps(grocery_categories)
     })
 
 @login_required

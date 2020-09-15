@@ -1,9 +1,9 @@
 class Search extends React.Component {
     constructor(props) {
         super(props);
-        const str = this.props.all_recipes.replace(/&quot;/g, '"');
-        const all_recipes = JSON.parse(str);
+        const all_recipes = str_to_dict(this.props.all_recipes)
         
+        // get starting list of all tags & all active tags
         const all_tags = [];
         const active_tags = [];
         for (let recipe of all_recipes) {
@@ -17,11 +17,13 @@ class Search extends React.Component {
             }
         }
 
+        // set filter tags
         let filter_tags = false;
         if (active_tags.length > 0) {
             filter_tags = true;
         }
 
+        // set initial state
         this.state = {
             all_recipes: all_recipes,
             recipes_showing: all_recipes,
@@ -41,12 +43,13 @@ class Search extends React.Component {
             search_recipes: this.props.search_recipes
         }
 
-        // this preserves "this" so you can use it in the function
+        // preserve "this" so you can use it in the function
         this.handleChange = this.handleChange.bind(this);
         this.handleClickTag = this.handleClickTag.bind(this);
         this.sortBy = this.sortBy.bind(this);
     }
 
+    // filter recipes when first loaded
     componentDidMount() {
         this.update_recipes_showing();
     }
@@ -56,16 +59,15 @@ class Search extends React.Component {
 
         this.setState(state => {
             let new_active_tags;
-            if (tag === 'all') {
-                new_active_tags = state.all_tags;
-            } else if (tag === 'none') {
-                new_active_tags = [];
-            } else if (state.active_tags.includes(tag)) {
+            if (state.active_tags.includes(tag)) {
+                // remove tag from active list
                 new_active_tags = state.active_tags.filter(t => t != tag);
             } else {
+                // add tag to active list
                 new_active_tags = state.active_tags.concat(tag);
             }
 
+            // reset state
             return {
                 active_tags: new_active_tags,
             }
@@ -77,6 +79,7 @@ class Search extends React.Component {
         this.setState(state => {
             const new_recipes_showing = [];
 
+            // check each filter
             for (let recipe of state.all_recipes) {
                 let valid_tag;
                 // tags
@@ -144,6 +147,7 @@ class Search extends React.Component {
                     valid_substring = true;
                 }
 
+                // add to list to show if all are valid
                 if (valid_tag && valid_prep_time && valid_cook_time && valid_total_time && valid_substring) {
                     new_recipes_showing.push(recipe);
                 }
@@ -158,6 +162,7 @@ class Search extends React.Component {
 
     sortRecipes() {
         this.setState(state => {
+            // if none
             if (state.all_recipes.length == 0) { 
                 return {
                     recipes_showing: []
@@ -224,9 +229,9 @@ class Search extends React.Component {
 
     render() {
         const results = [];
-        const isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+        const isMobile = is_mobile()
 
-        // headings
+        // set up headings
         const labels = {
             name: 'Name',
             prep_time: 'Prep Time',
@@ -249,6 +254,7 @@ class Search extends React.Component {
             )
         }
 
+        // mobile headings
         if (isMobile) {
             results.push(
                 <div key='headers'>
@@ -263,6 +269,7 @@ class Search extends React.Component {
                     </div>
                 </div>
             )
+        // desktop headings
         } else {
             results.push(
                 <div key='headers' className='font-weight-light row'>
@@ -273,6 +280,7 @@ class Search extends React.Component {
 
         // recipes
         for (let recipe of this.state.recipes_showing) {
+            // cook time
             let cook = '-';
             if (recipe['cook_time']) {
                 cook = String(recipe['cook_time']).concat(' min');
@@ -280,6 +288,7 @@ class Search extends React.Component {
                     cook = 'Cook Time: '.concat(cook)
                 }
             }
+            // prep time
             let prep = '-';
             if (recipe['prep_time']) {
                 prep = String(recipe['prep_time']).concat(' min');
@@ -307,6 +316,7 @@ class Search extends React.Component {
                 </div>
             )
         }
+        // if no recipes
         if (results.length < 2) {
             results.push(
                 <h5 className='text-left py-3' key='no recipes' >No Recipes</h5>
@@ -349,7 +359,7 @@ class Search extends React.Component {
                 {/* Filters */}
                 <div id='filters' className='collapse border shadow my-3 p-4 rounded'>
 
-                    {/* substring */}
+                    {/* substring of name */}
                     <div className='bg-white'>
                         <div className='border p-2'>
                             <span>Search by Name:</span>

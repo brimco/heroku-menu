@@ -1,9 +1,8 @@
 class RecipeGroceries extends React.Component {
     constructor(props) {
         super(props);
-        const recipes = JSON.parse(this.props.recipes.replace(/&quot;/g, '"'));
         this.state = {
-            recipes: recipes,
+            recipes: str_to_dict(this.props.recipes),
         }
     }
 

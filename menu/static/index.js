@@ -1,13 +1,5 @@
 function fillRandomRecipe(random_recipe_str) {
-    const str = random_recipe_str.replace(/&quot;/g, '"');
-
-    let random_recipe;
-    if (random_recipe_str == 'None') {
-        random_recipe = null;
-    } else{
-        random_recipe = JSON.parse(str);
-    }
-
+    const random_recipe = str_to_dict(random_recipe_str)
     const container = document.querySelector('#randomRecipe');
 
     if (random_recipe) {
@@ -90,14 +82,7 @@ function fillRandomRecipe(random_recipe_str) {
 }
 
 function fillUpcomingMealPlan(meal_plan_str) {
-    const str = meal_plan_str.replace(/&quot;/g, '"').replace(/\n/g, ". ").replace(/\t/g, " - ")
-
-    let meal_plan;
-    if (str == 'None') {
-        meal_plan = null
-    } else {
-        meal_plan = JSON.parse(str);
-    }
+    const meal_plan = str_to_dict(meal_plan_str)
     const container = document.querySelector('#upcomingMealPlan');
 
     if (meal_plan) {
@@ -173,7 +158,7 @@ function addToGroceryList() {
         confirm.css('backgroundColor', "#c3f2c9")
 
         // if added, fix number in summary
-        if (was_added) {
+        if (json['was_added']) {
             let to_fix = document.querySelector(`#${category}`);
             if (to_fix == null) {
                 to_fix = document.createElement('p');
@@ -195,9 +180,7 @@ function addToGroceryList() {
 }
 
 function fillCategories(categories_str) {
-    const str = categories_str.replace(/&#x27;/g, '"');
-    const categories = JSON.parse(str);
-    
+    const categories = str_to_dict(categories_str)
     const container = document.querySelector('#categories')
 
     // label

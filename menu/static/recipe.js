@@ -1,11 +1,9 @@
 class RecipeInfo extends React.Component {
     constructor(props) {
         super(props);
-        const str = this.props.recipe.replace(/&quot;/g, '"');
-        const recipe = JSON.parse(str); 
 
         this.state = {
-            recipe: recipe,
+            recipe: str_to_dict(this.props.recipe) ,
             current_servings: recipe.servings
         }
 
@@ -32,6 +30,7 @@ class RecipeInfo extends React.Component {
         }
         // split number: 1 1/2
         if (num.includes(' ')) {
+            // add
             let nums = num.split(' ');
             let sum = 0;
             for (let n of nums) {
@@ -41,13 +40,14 @@ class RecipeInfo extends React.Component {
         }
         // fraction
         if (num.includes('/')) {
+            // divide
             let nums = num.split('/');
             let div = this.to_decimal(nums[0]) / this.to_decimal(nums[1])
             return div
         }
         // range: 2-3 cups
         if (num.includes('-')) {
-            // range, take the average
+            // take the average
             let nums = num.split('-');
             let ave = (this.to_decimal(nums[0]) + this.to_decimal(nums[1])) / 2;
             return ave
@@ -59,7 +59,7 @@ class RecipeInfo extends React.Component {
     to_fraction(num) {
         const SHOW_ERRORS = false;
         const ROUND_WITH = 100;
-        const DENOMINATOR_OPTIONS = [2,3,4,6,8]
+        const DENOMINATOR_OPTIONS = [2,3,4,8]
 
         if (parseInt(num) == num) {
             return `${num}`
@@ -211,17 +211,20 @@ class RecipeInfo extends React.Component {
 
         return (
             <div>
+                {/* info */}
                 <div className="row rounded border bg-white mx-4 mt-4">
                     {info_line}
                 </div>
 
                 <div className="row m-3">
+                    {/* ingredients */}
                     <div className='col-sm m-2 p-2 rounded border bg-white'>
                         <h4 className="m-2">Ingredients</h4>
                         <div className="text-left">
                             {ingredients}
                         </div>
                     </div>
+                    {/* steps */}
                     <div className='col-sm m-2 p-2 rounded border bg-white'>
                         <h4 className="m-2">Steps</h4> 
                         <div className="text-left">

@@ -1,18 +1,18 @@
 class GroceryList extends React.Component {
     constructor(props) {
         super(props);
-        const starting_list = JSON.parse(this.props.starting_list.replace(/&quot;/g, '"'));
+        // sort categories in list by order?
 
-        // sort categories in list by order
-
+        // set initial state
         this.state = {
-            list: starting_list,
+            list: str_to_dict(this.props.starting_list),
             to_add: '',
             reassigned_category: '',
             info_modal: '',
             new_category_name: ''
         }
 
+        // bind this
         this.handleChange = this.handleChange.bind(this);
         this.addToList = this.addToList.bind(this);
         this.update = this.update.bind(this);
@@ -40,7 +40,7 @@ class GroceryList extends React.Component {
                 names_to_remove.push(box.id);
             }
         })
-
+        // if none were checked, tell how the button works
         if (names_to_remove.length == 0) {
             this.setState(state=> {
                 return {
@@ -171,6 +171,7 @@ class GroceryList extends React.Component {
             return;
         }
 
+        // send item to database 
         const new_list = this.state.list;
         fetch(`/groceries`, {
             method: 'PUT',
@@ -256,6 +257,8 @@ class GroceryList extends React.Component {
     render() {
         const groceries = [];
         const category_options = [];
+
+        // add all categories
         for (let category in this.state.list) { 
             groceries.push(
                 <div key={category} className='card p-3'>
