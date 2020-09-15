@@ -129,20 +129,20 @@ def new_recipe(request, info=None):
         # get recipe if it's an edit (if there is an id given)
         if data['id']:
             new_recipe = Recipe.objects.get(user=request.user, pk=data['id'])
-            new_recipe.name = data['name']
+            new_recipe.name = data['name'].rstrip()
             new_recipe.prep_time = data['preptime']
             new_recipe.cook_time = data['cooktime']
-            new_recipe.source = data['source']
+            new_recipe.source = data['source'].rstrip()
             new_recipe.servings = data['servings']
 
         else:
             # save new recipe
             new_recipe = Recipe(
                 user = request.user,
-                name = data['name'],
+                name = data['name'].rstrip(),
                 prep_time = data['preptime'],
                 cook_time = data['cooktime'],
-                source = data['source'],
+                source = data['source'].rstrip(),
                 servings = data['servings'],
             )
         new_recipe.save()
@@ -150,6 +150,7 @@ def new_recipe(request, info=None):
         # save tag (need to get list of objs)
         tag_objs = []
         for tag in data['tags']:
+            tag = tag.rstrip()
             try: 
                 tag_obj = Tag.objects.get(user=request.user, name=tag)
             except ObjectDoesNotExist:
@@ -163,9 +164,9 @@ def new_recipe(request, info=None):
         for i in data['ingredients']:
             # need to create a new ingredient for every one. see if food is already make
             try: 
-                food_obj = Food.objects.get(user=request.user, name=i['ingredient'])
+                food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'].rstrip())
             except ObjectDoesNotExist:
-                food_obj = Food.objects.create(name=i['ingredient'], user=request.user)
+                food_obj = Food.objects.create(name=i['ingredient'].rstrip(), user=request.user)
                 food_obj.save()
             
             amt = ''
@@ -256,6 +257,7 @@ def mealplans(request):
 @login_required
 def new_meal_plan(request):
     if request.method == 'POST':
+        data['notes'] = date['notes'].rstrip()
         try:
             # save new/edited meal plan
             data = json.loads(request.body)
@@ -309,7 +311,7 @@ def edit_meal_plan(request, meal_plan_id):
         'id': mealplan.id,
         'date': mealplan.date,
         'selected': mealplan.recipes.all(),
-        'notes': mealplan.notes
+        'notes': mealplan.notes.rstrip()
     })
 
 @login_required
