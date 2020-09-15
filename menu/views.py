@@ -295,8 +295,8 @@ def new_meal_plan(request):
             meal_plan.recipes.set(recipe_objs)
             error = 14
             return JsonResponse({"id": meal_plan.id})
-        except:
-            return JsonResponse({'error': error})
+        except Exception as err:
+            return JsonResponse({'error': f'{error}: {err}'})
     return render(request, 'menu/new_meal_plan.html', {
         'all_recipes': Recipe.objects.filter(user=request.user).order_by('name')
     })
