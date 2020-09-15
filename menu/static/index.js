@@ -1,4 +1,5 @@
 function fillRandomRecipe(random_recipe_str) {
+    console.log(random_recipe_str)
     const random_recipe = str_to_dict(random_recipe_str)
     const container = document.querySelector('#randomRecipe');
 
