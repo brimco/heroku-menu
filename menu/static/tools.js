@@ -9,8 +9,6 @@ function str_to_dict(str) {
     replaced = replaced.replace(/&#x27;/g, "'")
     
     // convert to json and return
-    console.log('convert to json:')
-    console.log(replaced)
     try {
         return JSON.parse(replaced)
     }
