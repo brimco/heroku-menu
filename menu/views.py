@@ -256,30 +256,46 @@ def mealplans(request):
 @login_required
 def new_meal_plan(request):
     if request.method == 'POST':
-        # save new/edited meal plan
-        data = json.loads(request.body)
+        try:
+            error = 1
+            # save new/edited meal plan
+            data = json.loads(request.body)
+            error = 2
 
-        # get meal plan if it's an edit (if there is an id given)
-        if data['id']:
-            meal_plan = MealPlan.objects.get(user=request.user, pk=data['id'])
-            meal_plan.set_date(data['date'])
-            meal_plan.notes = data['notes']
+            # get meal plan if it's an edit (if there is an id given)
+            if data['id']:
+                error = 3
+                meal_plan = MealPlan.objects.get(user=request.user, pk=data['id'])
+                error = 4
+                meal_plan.set_date(data['date'])
+                error = 5
+                meal_plan.notes = data['notes']
 
-        else:
-            # save new meal plan
-            meal_plan = MealPlan(notes = data['notes'], user=request.user)
-            meal_plan.set_date(data['date'])
-        meal_plan.save()
+            else:
+                # save new meal plan
+                error = 6
+                meal_plan = MealPlan(notes = data['notes'], user=request.user)
+                error = 7
+                meal_plan.set_date(data['date'])
+            meal_plan.save()
+            error = 8
 
-        # save recipes (need to get list of objs)
-        recipe_objs = []
-        for recipe in data['recipes']:
-            recipe_obj = Recipe.objects.get(user=request.user, name=recipe)
-            recipe_objs.append(recipe_obj)
+            # save recipes (need to get list of objs)
+            error = 9
+            recipe_objs = []
+            for recipe in data['recipes']:
+                error = 10
+                recipe_obj = Recipe.objects.get(user=request.user, name=recipe)
+                error = 11
+                recipe_objs.append(recipe_obj)
+                error = 12
 
-        meal_plan.recipes.set(recipe_objs)
-        return JsonResponse({"id": meal_plan.id})
-
+            error = 13
+            meal_plan.recipes.set(recipe_objs)
+            error = 14
+            return JsonResponse({"id": meal_plan.id})
+        except:
+            return JsonResponse({'error': error})
     return render(request, 'menu/new_meal_plan.html', {
         'all_recipes': Recipe.objects.filter(user=request.user).order_by('name')
     })

@@ -35,8 +35,12 @@ function submit_new_meal_plan(meal_plan_id=null) {
         method: 'POST',
         body: JSON.stringify(meal_plan)
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log(`response: ${response}`)
+        return response.json()
+    })
     .then(json => {
+        console.log(`json: ${json}`)
         console.log(11)
         // go to mealplan page
         location.href = '/mealplans/'.concat(json['id']);
