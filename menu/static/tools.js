@@ -9,7 +9,10 @@ function str_to_dict(str) {
     replaced = replaced.replace(/&#x27;/g, "'")
     
     // convert to json and return
-    return JSON.parse(replaced)
+    console.log('convert to json:')
+    console.log(replaced)
+
+    return JSON.load(replaced)
 }
 
 function is_mobile() {
