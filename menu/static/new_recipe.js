@@ -417,7 +417,6 @@ function submit_new_recipe(recipe_id=null) {
     })
     .then(response => response.json())
     .then(json => {
-        const id = json['id'];
-        location.href = '/recipes/'.concat(id);
+        location.href = '/recipes/'.concat(json['id']);
     });
 }

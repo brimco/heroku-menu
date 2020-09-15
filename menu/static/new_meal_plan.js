@@ -28,7 +28,6 @@ function submit_new_meal_plan(meal_plan_id=null) {
     .then(response => response.json())
     .then(json => {
         // go to mealplan page
-        console.log(`id: ${json['id']}`)
-        location.href = `/mealplans/${json['id']}`;
+        location.href = '/mealplans/'.concat(json['id']);
     });
 }
