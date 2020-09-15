@@ -11,8 +11,13 @@ function str_to_dict(str) {
     // convert to json and return
     console.log('convert to json:')
     console.log(replaced)
-
-    return JSON.load(replaced)
+    try {
+        return JSON.parse(replaced)
+    }
+    catch(err) {
+        console.log(`Error parsing: ${err}`)
+        return null
+    }
 }
 
 function is_mobile() {
