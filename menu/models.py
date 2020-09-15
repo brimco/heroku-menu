@@ -113,4 +113,7 @@ class MealPlan(models.Model):
     objects = models.Manager()
 
     def set_date(self, new_date):
-        self.date = date.fromisoformat(new_date)
+        try:
+            self.date = date.fromisoformat(new_date)
+        except:
+            self.date = new_date

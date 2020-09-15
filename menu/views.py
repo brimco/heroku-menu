@@ -275,8 +275,9 @@ def new_meal_plan(request):
                 # save new meal plan
                 error = 6
                 meal_plan = MealPlan(notes = data['notes'], user=request.user)
-                error = 7
+                error = f'7: data["date"]'
                 meal_plan.set_date(data['date'])
+            error = 7.5
             meal_plan.save()
             error = 8
 
