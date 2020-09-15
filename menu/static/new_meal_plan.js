@@ -36,14 +36,16 @@ function submit_new_meal_plan(meal_plan_id=null) {
         body: JSON.stringify(meal_plan)
     })
     .then(response => {
-        console.log(`response: ${response}`)
+        console.log(`response: `)
+        console.log(response)
         return response.json()
     })
     .then(json => {
-        console.log(`json: ${json}`)
+        console.log(`json: `)
+        console.log(json)
         console.log(11)
         // go to mealplan page
-        location.href = '/mealplans/'.concat(json['id']);
+        // location.href = '/mealplans/'.concat(json['id']);
         console.log(12)
     })
     .catch(error => {
