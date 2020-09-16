@@ -417,9 +417,9 @@ function submit_new_recipe(recipe_id=null) {
     })
     .then(response => response.json())
     .then(json => {
-        if (json.includes('error') {
-            console.log(`Error creating new recipe: ${json['error']}`)
-        }
+        console.log(`New recipe post response:`)
+        console.log(json)
+        
         location.href = '/recipes/'.concat(json['id']);
     })
     .catch(error => {
