@@ -415,11 +415,15 @@ function submit_new_recipe(recipe_id=null) {
         method: 'POST',
         body: JSON.stringify(recipe)
     })
-    .then(response => response.json())
+    .then(response =>  {
+        console.log('response: ')
+        console.log(response)
+        return response.json()
+    })
     .then(json => {
         console.log(`New recipe post response:`)
         console.log(json)
-        
+
         location.href = '/recipes/'.concat(json['id']);
     })
     .catch(error => {
