@@ -6,20 +6,20 @@
         <div class="container text-center rounded border bg-light mt-3">
             <!-- title and buttons -->
             <div class="row">
-                <div class="col-sm text-left pt-3 mobile-center">
+                <div class="col text-left pt-3">
                     <a href='{% url "menu:new_meal_plan" %}' class='btn btn-sm btn-outline-info'>
                         <img src='{% static "/images/add.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
-                        New Meal Plan
+                        <span class='mobile-hidden'>New Meal Plan</span>
                     </a>  
                     <button class='btn btn-sm btn-outline-info ml-2' onclick=(verify_delete_all())>
                         <img src='{% static "/images/trash.svg" %}' height="15" width="15" style="vertical-align: -2px" class='p-0 m-0'> 
-                        Delete All
+                        <span class='mobile-hidden'>Delete All</span>
                     </button> 
                 </div>
-                <div class='col-sm text-right py-3 mobile-center'>
+                <div class='col text-right py-3'>
                     <a class="btn btn-outline-info btn-sm" href="{% url 'menu:meal_plan_groceries' %}">
                         <img src='{% static "images/list.svg" %}' height="20" width="20" style='vertical-align: -5px' class='p-0 m-0'>
-                        Add to Grocery List
+                        <span class='mobile-hidden'>Add to Grocery List</span>
                     </a>                  
                 </div>
             </div>

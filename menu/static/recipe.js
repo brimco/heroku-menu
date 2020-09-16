@@ -209,6 +209,18 @@ class RecipeInfo extends React.Component {
             step_num++;
         }
 
+        const steps_section = []
+        if (steps.length > 0) {
+            steps_section.push(
+            <div className='col-sm m-2 p-2 rounded border bg-white'>
+                <h4 className="m-2">Steps</h4> 
+                <div className="text-left">
+                    {steps}
+                </div>
+            </div>
+            )
+        }
+
         return (
             <div>
                 {/* info */}
@@ -225,12 +237,7 @@ class RecipeInfo extends React.Component {
                         </div>
                     </div>
                     {/* steps */}
-                    <div className='col-sm m-2 p-2 rounded border bg-white'>
-                        <h4 className="m-2">Steps</h4> 
-                        <div className="text-left">
-                            {steps}
-                        </div>
-                    </div>
+                    {steps_section}
                 </div>
             </div>
         )
