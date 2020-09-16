@@ -212,7 +212,7 @@ class RecipeInfo extends React.Component {
         const steps_section = []
         if (steps.length > 0) {
             steps_section.push(
-            <div className='col-sm m-2 p-2 rounded border bg-white'>
+            <div className='col-sm m-2 p-2 rounded border bg-white' key='steps_section'>
                 <h4 className="m-2">Steps</h4> 
                 <div className="text-left">
                     {steps}

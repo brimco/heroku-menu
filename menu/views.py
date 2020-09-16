@@ -109,91 +109,95 @@ def edit_recipe(request, recipe_id):
 @login_required
 def new_recipe(request, info=None):
     if request.method == 'POST':
-        # save new/edited recipe
-        data = json.loads(request.body)
+        try:
+            # save new/edited recipe
+            data = json.loads(request.body)
 
-        # prep time, cooktime, servings
-        ints = ['preptime', 'cooktime', 'servings']
-        for each in ints:
-            if data[each] == '':
-                data[each] = None
-            else:
-                try:
-                    data[each] = int(data[each])
-                except Exception as err:
-                    print('error:', err)
+            # prep time, cooktime, servings
+            ints = ['preptime', 'cooktime', 'servings']
+            for each in ints:
+                if data[each] == '':
                     data[each] = None
+                else:
+                    try:
+                        data[each] = int(data[each])
+                    except Exception as err:
+                        print('error:', err)
+                        data[each] = None
 
-        # get recipe if it's an edit (if there is an id given)
-        if data['id']:
-            new_recipe = Recipe.objects.get(user=request.user, pk=data['id'])
-            new_recipe.name = data['name'].rstrip()
-            new_recipe.prep_time = data['preptime']
-            new_recipe.cook_time = data['cooktime']
-            new_recipe.source = data['source'].rstrip()
-            new_recipe.servings = data['servings']
+            # get recipe if it's an edit (if there is an id given)
+            if data['id']:
+                new_recipe = Recipe.objects.get(user=request.user, pk=data['id'])
+                new_recipe.name = data['name'].rstrip()
+                new_recipe.prep_time = data['preptime']
+                new_recipe.cook_time = data['cooktime']
+                new_recipe.source = data['source'].rstrip()
+                new_recipe.servings = data['servings']
 
-        else:
-            # save new recipe
-            new_recipe = Recipe(
-                user = request.user,
-                name = data['name'].rstrip(),
-                prep_time = data['preptime'],
-                cook_time = data['cooktime'],
-                source = data['source'].rstrip(),
-                servings = data['servings'],
-            )
-        new_recipe.save()
+            else:
+                # save new recipe
+                new_recipe = Recipe(
+                    user = request.user,
+                    name = data['name'].rstrip(),
+                    prep_time = data['preptime'],
+                    cook_time = data['cooktime'],
+                    source = data['source'].rstrip(),
+                    servings = data['servings'],
+                )
+            new_recipe.save()
 
-        # save tag (need to get list of objs)
-        tag_objs = []
-        for tag in data['tags']:
-            tag = tag.rstrip()
-            try: 
-                tag_obj = Tag.objects.get(user=request.user, name=tag)
-            except ObjectDoesNotExist:
-                tag_obj = Tag(name=tag, user=request.user)
-                tag_obj.save()
-            tag_objs.append(tag_obj)
-        new_recipe.tags.set(tag_objs)
+            # save tag (need to get list of objs)
+            tag_objs = []
+            for tag in data['tags']:
+                tag = tag.rstrip()
+                try: 
+                    tag_obj = Tag.objects.get(user=request.user, name=tag)
+                except ObjectDoesNotExist:
+                    tag_obj = Tag(name=tag, user=request.user)
+                    tag_obj.save()
+                tag_objs.append(tag_obj)
+            new_recipe.tags.set(tag_objs)
 
-        # save ingredient objs
-        ingredient_objs = []
-        for i in data['ingredients']:
-            # need to create a new ingredient for every one. see if food is already make
-            try: 
-                food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'].rstrip())
-            except ObjectDoesNotExist:
-                food_obj = Food.objects.create(name=i['ingredient'].rstrip(), user=request.user)
-                food_obj.save()
-            
-            amt = ''
-            if 'amount' in i:
-                amt = i['amount']
-            
-            unt = ''
-            if 'unit' in i:
-                unt = i['unit']
+            # save ingredient objs
+            ingredient_objs = []
+            for i in data['ingredients']:
+                # need to create a new ingredient for every one. see if food is already make
+                try: 
+                    food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'].rstrip())
+                except ObjectDoesNotExist:
+                    food_obj = Food.objects.create(name=i['ingredient'].rstrip(), user=request.user)
+                    food_obj.save()
+                
+                amt = ''
+                if 'amount' in i:
+                    amt = i['amount']
+                
+                unt = ''
+                if 'unit' in i:
+                    unt = i['unit']
 
-            dsc = ''
-            if 'description' in i:
-                dsc = i['description']
-            
-            new_ingredient = Ingredient(
-                user = request.user,
-                food = food_obj,
-                amount = amt,
-                unit = unt, 
-                description = dsc
-            )
-            new_ingredient.save()
-            ingredient_objs.append(new_ingredient)
-        new_recipe.ingredients.set(ingredient_objs)
+                dsc = ''
+                if 'description' in i:
+                    dsc = i['description']
+                
+                new_ingredient = Ingredient(
+                    user = request.user,
+                    food = food_obj,
+                    amount = amt,
+                    unit = unt, 
+                    description = dsc
+                )
+                new_ingredient.save()
+                ingredient_objs.append(new_ingredient)
 
-        # save steps
-        new_recipe.set_steps(data['steps'])
-        new_recipe.save()
-        return JsonResponse({"id": new_recipe.id})
+            new_recipe.ingredients.set(ingredient_objs) # i think this row is causing probs with heroku
+
+            # save steps
+            new_recipe.set_steps(data['steps'])
+            new_recipe.save()
+            return JsonResponse({"id": new_recipe.id})
+        except Exception as err:
+            return JsonResponse({'error': err})
 
     return render(request, 'menu/new_recipe.html', {
         'tag_options': json.dumps([t.name for t in Tag.objects.filter(user=request.user).order_by('name')])
