@@ -14,7 +14,7 @@ class Tag(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.user.username})'
     
 
 def get_next_order():
@@ -30,44 +30,23 @@ class Category(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.user.username})'
 
 class Food(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='foods', null=True)
+    category = models.ManyToManyField(Category, related_name='foods', null=True)
     on_grocery_list = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="foods")   
     objects = models.Manager()
 
     def __str__(self):
-        return f'{self.name}'
-
-
-class Ingredient(models.Model):
-    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='ingredients')
-    amount = models.CharField(max_length=64, blank=True)
-    unit = models.CharField(max_length=64, blank=True)
-    description = models.CharField(max_length=256, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ingredients")   
-    objects = models.Manager()
-
-    def __str__(self):
-        s = ''
-        if self.amount:
-            s += f' {self.amount}'
-        if self.unit:
-            s += f' {self.unit}'
-        if self.food:
-            s += f' {self.food.name}'
-        if self.description:
-            s += f', {self.description}'
-        return s
+        return f'{self.name} ({self.user.username})'
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64)
     tags = models.ManyToManyField(Tag, related_name='recipes', blank=True)
-    ingredients = models.ManyToManyField(Ingredient, related_name='recipes')
+    # ingredients = models.ForeignKey(Ingredient, related_name='recipes')   ## ingredients are defined using foreign key in Ingredient model
     prep_time = models.PositiveIntegerField(blank=True, null=True)
     cook_time = models.PositiveIntegerField(blank=True, null=True)
     source = models.CharField(max_length=256, blank=True)
@@ -103,7 +82,28 @@ class Recipe(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.user.username})'
+
+class Ingredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ingredients')
+    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='ingredients')
+    amount = models.CharField(max_length=64, blank=True)
+    unit = models.CharField(max_length=64, blank=True)
+    description = models.CharField(max_length=256, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ingredients")   
+    objects = models.Manager()
+
+    def __str__(self):
+        s = ''
+        if self.amount:
+            s += f' {self.amount}'
+        if self.unit:
+            s += f' {self.unit}'
+        if self.food:
+            s += f' {self.food.name}'
+        if self.description:
+            s += f', {self.description}'
+        return f'{s} ({self.user.username}: {self.recipe.name})'
             
 class MealPlan(models.Model):
     date = models.DateField(default=date.today)
@@ -117,3 +117,6 @@ class MealPlan(models.Model):
             self.date = date.fromisoformat(new_date)
         except:
             self.date = new_date
+
+    def __str__(self):
+        return f'{self.date} ({self.user.username})'

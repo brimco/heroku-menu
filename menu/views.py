@@ -161,7 +161,7 @@ def new_recipe(request, info=None):
             # save ingredient objs
             ingredient_objs = []
             for i in data['ingredients']:
-                # need to create a new ingredient for every one. see if food is already make
+                # need to get the food ingredient first
                 try: 
                     food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'].rstrip())
                 except ObjectDoesNotExist:
@@ -179,18 +179,27 @@ def new_recipe(request, info=None):
                 dsc = ''
                 if 'description' in i:
                     dsc = i['description']
-                
-                new_ingredient = Ingredient(
-                    user = request.user,
-                    food = food_obj,
-                    amount = amt,
-                    unit = unt, 
-                    description = dsc
-                )
-                new_ingredient.save()
-                ingredient_objs.append(new_ingredient)
 
-            new_recipe.ingredients.set(ingredient_objs) # i think this row is causing probs with heroku
+                # next try to find the ingredient if exists (this would happen when editing)
+                try:
+                    ing_obj = Ingredient.objects.get(user=request.user, recipe=new_recipe, food=food_obj)
+                    # set all the other stuff to make sure it's right
+                    ing_obj.amount = amt
+                    ing_obj.unit = unt
+                    ing_obj.description = dsc
+                except ObjectDoesNotExist:
+                    ing_obj = Ingredient.objects.create(
+                                    user=request.user, 
+                                    recipe=new_recipe, 
+                                    food=food_obj,
+                                    amount=amt,
+                                    unit=unt,
+                                    description=dsc)
+
+                ing_obj.save()
+                ingredient_objs.append(ing_obj)
+
+            new_recipe.ingredients.set(ingredient_objs) 
 
             # save steps
             new_recipe.set_steps(data['steps'])
