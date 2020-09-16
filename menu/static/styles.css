@@ -58,6 +58,10 @@ h6,
   .mobile-max-width {
     max-width: 12em;
   }
+
+  .mobile-block {
+    display: block;
+  }
 }
 
 html,

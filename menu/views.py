@@ -33,14 +33,12 @@ def index(request):
         year = plan_date.strftime('%Y')
         plan_date = f'{month} {day}, {year}'
         
-        print('start')
         plan = json.dumps({
                 'id': plans[indx].id,
                 'date': plan_date,
                 'recipes': [{'name': r.name, 'id': r.id} for r in plans[indx].recipes.all()],
                 'notes': plans[indx].notes
             })
-        print(f'stop. plan: {plan}')
     else: 
         plan = None
 
@@ -69,11 +67,11 @@ def index(request):
 
 @login_required
 def recipes(request):
-    search_recipes = request.GET.get('recipe', '')
+    find_name = request.GET.get('recipe', '')
     search_tags = request.GET.get('tag', '')
     return render(request, 'menu/all_recipes.html', {
         'recipes': get_str_recipes(user=request.user),
-        'search_recipes': search_recipes,
+        'find_name': find_name,
         'search_tags': search_tags
     })
 

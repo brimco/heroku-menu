@@ -17,6 +17,15 @@ class Search extends React.Component {
             }
         }
 
+        // set filter name and find name
+        let filter_name = false;
+        let find_name = ''
+        if (this.props.find_name != null) {
+            filter_name = true;
+            find_name = this.props.find_name
+        }
+        console.log(`find name: ${find_name}, filter name: ${filter_name}`)
+
         // set filter tags
         let filter_tags = false;
         if (active_tags.length > 0) {
@@ -27,6 +36,8 @@ class Search extends React.Component {
         this.state = {
             all_recipes: all_recipes,
             recipes_showing: all_recipes,
+            filter_name: filter_name,
+            find_name: find_name,
             filter_tags: filter_tags,
             all_tags: all_tags,
             active_tags: active_tags,
@@ -39,8 +50,7 @@ class Search extends React.Component {
             filter_total_time: false,
             total_time_low: 0,
             total_time_high: 100,
-            sort_by: 'name',
-            search_recipes: this.props.search_recipes
+            sort_by: 'name'
         }
 
         // preserve "this" so you can use it in the function
@@ -143,7 +153,9 @@ class Search extends React.Component {
 
                 // substring of name
                 let valid_substring = false;
-                if (recipe.name.toLowerCase().includes(state.search_recipes.toLowerCase())) {
+                if (!state.filter_name) {
+                    valid_substring = true;
+                } else if (recipe.name.toLowerCase().includes(state.find_name.toLowerCase())) {
                     valid_substring = true;
                 }
 
@@ -328,7 +340,9 @@ class Search extends React.Component {
         for (let each of ['prep', 'cook', 'total']) {
             time_filters.push(
                 <div className='col-sm border my-2 p-2 bg-white' key={each}>
-                    <input type='checkbox' id={`filter_${each}_time`} value={this.state[`filter_${each}_time`]} onChange={this.handleChange}></input> {`${each.slice(0,1).toLocaleUpperCase().concat(each.slice(1))} Time`}:
+                    <div className='pb-2'>
+                        <input type='checkbox' id={`filter_${each}_time`} value={this.state[`filter_${each}_time`]} onChange={this.handleChange}></input> {`${each.slice(0,1).toLocaleUpperCase().concat(each.slice(1))} Time`}:
+                    </div>
                     <input type='number' id={`${each}_time_low`} value={this.state[`${each}_time_low`]} className='form-control d-inline ml-2 mr-2' style={{width: '8ch'}} disabled={!this.state[`filter_${each}_time`]} onChange={this.handleChange}></input>to 
                     <input type='number' id={`${each}_time_high`} value={this.state[`${each}_time_high`]} className='form-control d-inline ml-2 mr-2' style={{width: '8ch'}} disabled={!this.state[`filter_${each}_time`]} onChange={this.handleChange}></input>minutes
                 </div>
@@ -362,8 +376,10 @@ class Search extends React.Component {
                     {/* substring of name */}
                     <div className='bg-white'>
                         <div className='border p-2'>
-                            <span>Search by Name:</span>
-                            <input type='text' id='search_recipes' value={this.state.search_recipes} onChange={this.handleChange} className='ml-2'></input>
+                            <span>
+                                <input type='checkbox' id='filter_name' value={this.state.filter_name} checked={this.state.filter_name} onChange={this.handleChange}></input> Name:
+                            </span>
+                            <input type='text' id='find_name' value={this.state.find_name} className='form-control d-inline ml-2 mr-2' style={{width: '24ch'}} disabled={!this.state.filter_name} onChange={this.handleChange}></input>
                         </div>
                     </div>
                 
@@ -377,7 +393,9 @@ class Search extends React.Component {
                     {/* tags */}
                     <div className='bg-white'>
                         <div className='border p-2'>
-                            <input type='checkbox' id='filter_tags' value={this.state.filter_tags} checked={this.state.filter_tags} onChange={this.handleChange}></input> Tags:
+                            <div>
+                                <input type='checkbox' id='filter_tags' value={this.state.filter_tags} checked={this.state.filter_tags} onChange={this.handleChange}></input> Tags:
+                            </div>
                             <div className='d-inline'>
                                 {tag_buttons}
                             </div>

@@ -32,18 +32,18 @@
         <script type='text/babel'>
             // recipes formatted as id: recipe name (JSON converted to string)
             const all_recipes = '{{ recipes }}';
-            const search_recipes = '{{ search_recipes }}';
+            const find_name = '{{ find_name }}';
             const search_tags = '{{ search_tags }}';
 
             function start() {
                 ReactDOM.render(<Search 
                                     all_recipes={all_recipes} 
-                                    search_recipes={search_recipes} 
+                                    find_name={find_name} 
                                     search_tags={search_tags} />, 
                                     document.querySelector('#search'));
                 
                 // click filter button if search_recipes or search_tags
-                if (search_recipes != '' || search_tags != '') {
+                if (find_name != '' || search_tags != '') {
                     document.querySelector('#filterBtn').click();
                 }
             }
