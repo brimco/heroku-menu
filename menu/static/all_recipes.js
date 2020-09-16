@@ -20,11 +20,10 @@ class Search extends React.Component {
         // set filter name and find name
         let filter_name = false;
         let find_name = ''
-        if (this.props.find_name != null) {
+        if (this.props.find_name != null && this.props.find_name != '') {
             filter_name = true;
             find_name = this.props.find_name
         }
-        console.log(`find name: ${find_name}, filter name: ${filter_name}`)
 
         // set filter tags
         let filter_tags = false;
@@ -372,6 +371,7 @@ class Search extends React.Component {
             <div className='text-center'>
                 {/* Filters */}
                 <div id='filters' className='collapse border shadow my-3 p-4 rounded'>
+                    <h5>Filters</h5>
 
                     {/* substring of name */}
                     <div className='bg-white'>

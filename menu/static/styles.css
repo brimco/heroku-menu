@@ -17,8 +17,18 @@ h3,
 h4,
 h5,
 h6,
+.nav-item,
 .header-font {
   font-family: Comfortaa-Regular, sans-serif;
+}
+
+.nav-link {
+  color: gray;
+}
+.nav-link:hover {
+  /* color: #f57070; */
+  color: #44a6c4;
+  text-decoration: none !important;
 }
 
 @media (max-width: 760px) {
@@ -91,4 +101,8 @@ body {
 .strikethrough:checked + span{
   text-decoration: line-through;
   color: rgb(177, 177, 177);
+}
+
+.dropdown-item:hover {
+  background-color: rgba(68, 166, 196, 0.8);
 }
