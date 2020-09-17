@@ -237,12 +237,12 @@ def groceries(request):
 
         return JsonResponse({"category": category, "id": obj.id, "was_added": was_added})
 
-    groceries = []
-    for category in Category.objects.filter(user=request.user).order_by('name'):
-        groceries.append({
-            'name': category.name,
-            'list': Food.objects.filter(user=request.user, category=category, on_grocery_list=True)
-        })
+    # groceries = []
+    # for category in Category.objects.filter(user=request.user).order_by('name'):
+    #     groceries.append({
+    #         'name': category.name,
+    #         'list': Food.objects.filter(user=request.user, category=category, on_grocery_list=True)
+    #     })
     return render(request, 'menu/groceries.html', {
         'starting_list': get_starting_grocery_list(request.user)
     })
@@ -444,7 +444,7 @@ def get_starting_grocery_list(user):
     lst = {}
     for obj in objs:
         category = 'Other'
-        if obj.category:
+        if obj.category.name:
             category = obj.category.name
 
         if category not in lst:
