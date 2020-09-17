@@ -14,7 +14,7 @@ class Tag(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f'{self.name} ({self.user.username})'
+        return self.name
     
 
 def get_next_order():
@@ -30,7 +30,7 @@ class Category(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f'{self.name} ({self.user.username})'
+        return self.name
 
 class Food(models.Model):
     name = models.CharField(max_length=64, unique=True)
@@ -40,8 +40,7 @@ class Food(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f'{self.name} ({self.user.username})'
-
+        return self.name
 
 class Recipe(models.Model):
     name = models.CharField(max_length=64)
@@ -82,7 +81,7 @@ class Recipe(models.Model):
 
 
     def __str__(self):
-        return f'{self.name} ({self.user.username})'
+        return self.name
 
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ingredients')
@@ -103,7 +102,7 @@ class Ingredient(models.Model):
             s += f' {self.food.name}'
         if self.description:
             s += f', {self.description}'
-        return f'{s} ({self.user.username}: {self.recipe.name})'
+        return s
             
 class MealPlan(models.Model):
     date = models.DateField(default=date.today)
@@ -119,4 +118,4 @@ class MealPlan(models.Model):
             self.date = new_date
 
     def __str__(self):
-        return f'{self.date} ({self.user.username})'
+        return self.date
