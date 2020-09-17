@@ -113,35 +113,29 @@ def new_recipe(request, info=None):
             # save new/edited recipe
             data = json.loads(request.body)
 
-            # prep time, cooktime, servings
-            ints = ['preptime', 'cooktime', 'servings']
-            for each in ints:
-                if data[each] == '':
-                    data[each] = None
-                else:
-                    try:
-                        data[each] = int(data[each])
-                    except Exception as err:
-                        print('error:', err)
-                        data[each] = None
+            # clean data
+            for each in ['preptime', 'cooktime', 'servings']:
+                data[each] = clean_int(data[each])
+            for each in ['name', 'source']:
+                data[each] = clean_string(data[each])
 
             # get recipe if it's an edit (if there is an id given)
             if data['id']:
                 new_recipe = Recipe.objects.get(user=request.user, pk=data['id'])
-                new_recipe.name = data['name'].rstrip()
+                new_recipe.name = data['name']
                 new_recipe.prep_time = data['preptime']
                 new_recipe.cook_time = data['cooktime']
-                new_recipe.source = data['source'].rstrip()
+                new_recipe.source = data['source']
                 new_recipe.servings = data['servings']
 
             else:
                 # save new recipe
                 new_recipe = Recipe(
                     user = request.user,
-                    name = data['name'].rstrip(),
+                    name = data['name'],
                     prep_time = data['preptime'],
                     cook_time = data['cooktime'],
-                    source = data['source'].rstrip(),
+                    source = data['source'],
                     servings = data['servings'],
                 )
             new_recipe.save()
@@ -149,7 +143,7 @@ def new_recipe(request, info=None):
             # save tag (need to get list of objs)
             tag_objs = []
             for tag in data['tags']:
-                tag = tag.rstrip()
+                tag = clean_string(tag)
                 try: 
                     tag_obj = Tag.objects.get(user=request.user, name=tag)
                 except ObjectDoesNotExist:
@@ -161,32 +155,37 @@ def new_recipe(request, info=None):
             # save ingredient objs
             ingredient_objs = []
             for i in data['ingredients']:
+                # clean data
+                i['ingredient'] = clean_string(i['ingredient'])
+
                 # need to get the food ingredient first
                 try: 
-                    food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'].rstrip())
+                    food_obj = Food.objects.get(user=request.user, name__iexact=i['ingredient'])
                 except ObjectDoesNotExist:
-                    food_obj = Food.objects.create(name=i['ingredient'].rstrip(), user=request.user)
+                    food_obj = Food.objects.create(name=i['ingredient'], user=request.user)
                     food_obj.save()
                 
                 amt = ''
                 if 'amount' in i:
-                    amt = i['amount']
+                    amt = clean_string(i['amount'])
                 
                 unt = ''
                 if 'unit' in i:
-                    unt = i['unit']
+                    unt = clean_string(i['unit'])
 
                 dsc = ''
                 if 'description' in i:
-                    dsc = i['description']
+                    dsc = clean_string(i['description'])
 
                 # next try to find the ingredient if exists (this would happen when editing)
                 try:
                     ing_obj = Ingredient.objects.get(user=request.user, recipe=new_recipe, food=food_obj)
-                    # set all the other stuff to make sure it's right
+                    # set all the other stuff again in case it was updated
                     ing_obj.amount = amt
                     ing_obj.unit = unt
                     ing_obj.description = dsc
+
+                # create new
                 except ObjectDoesNotExist:
                     ing_obj = Ingredient.objects.create(
                                     user=request.user, 
@@ -217,6 +216,8 @@ def new_recipe(request, info=None):
 def groceries(request):
     if request.method == 'PUT':
         info = json.loads(request.body.decode("utf-8"))
+        # clean info
+        info['name'] = clean_string(info['name'])
 
         obj = Food.objects.get_or_create(user=request.user, name=info['name'], defaults={'name': info['name'], 'user': request.user})[0] 
         was_added = False
@@ -226,23 +227,18 @@ def groceries(request):
             obj.on_grocery_list = info['on_grocery_list']
         
         if 'category' in info:
+            info['category'] = clean_string(info['category'])
             category_obj = Category.objects.get_or_create(user=request.user, name__iexact=info['category'], defaults={'name': info['category'], 'user': request.user})[0]
             obj.category = category_obj
 
         obj.save()
 
         category = 'Other'
-        if obj.category:
+        if obj.category and obj.category.name:
             category = obj.category.name
 
         return JsonResponse({"category": category, "id": obj.id, "was_added": was_added})
 
-    # groceries = []
-    # for category in Category.objects.filter(user=request.user).order_by('name'):
-    #     groceries.append({
-    #         'name': category.name,
-    #         'list': Food.objects.filter(user=request.user, category=category, on_grocery_list=True)
-    #     })
     return render(request, 'menu/groceries.html', {
         'starting_list': get_starting_grocery_list(request.user)
     })
@@ -271,7 +267,7 @@ def new_meal_plan(request):
         try:
             # save new/edited meal plan
             data = json.loads(request.body)
-            data['notes'] = data['notes'].rstrip()
+            data['notes'] = clean_string(data['notes'])
 
             # get meal plan if it's an edit (if there is an id given)
             if data['id']:
@@ -444,7 +440,7 @@ def get_starting_grocery_list(user):
     lst = {}
     for obj in objs:
         category = 'Other'
-        if obj.category.name:
+        if obj.category and obj.category.name:
             category = obj.category.name
 
         if category not in lst:
@@ -454,3 +450,15 @@ def get_starting_grocery_list(user):
             'category': category
         })
     return json.dumps(lst)
+
+def clean_string(input):
+    return ''.join(n for n in input if (n.isalnum() or n in '!@#$%^&*()-_=+,<.>/?\'";: ')).rstrip()
+
+def clean_int(input):
+    if input == '':
+        return None
+    try:
+        out = int(input)
+        return out
+    except:
+        return None

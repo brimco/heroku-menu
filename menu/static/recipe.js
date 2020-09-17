@@ -2,8 +2,9 @@ class RecipeInfo extends React.Component {
     constructor(props) {
         super(props);
 
+        const recipe = str_to_dict(this.props.recipe)
         this.state = {
-            recipe: str_to_dict(this.props.recipe) ,
+            recipe: recipe,
             current_servings: recipe.servings
         }
 

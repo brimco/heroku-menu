@@ -34,7 +34,7 @@ class Category(models.Model):
 
 class Food(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    category = models.ManyToManyField(Category, related_name='foods', null=True)
+    category = models.ManyToManyField(Category, related_name='foods')
     on_grocery_list = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="foods")   
     objects = models.Manager()
@@ -45,7 +45,6 @@ class Food(models.Model):
 class Recipe(models.Model):
     name = models.CharField(max_length=64)
     tags = models.ManyToManyField(Tag, related_name='recipes', blank=True)
-    # ingredients = models.ForeignKey(Ingredient, related_name='recipes')   ## ingredients are defined using foreign key in Ingredient model
     prep_time = models.PositiveIntegerField(blank=True, null=True)
     cook_time = models.PositiveIntegerField(blank=True, null=True)
     source = models.CharField(max_length=256, blank=True)
@@ -86,7 +85,7 @@ class Recipe(models.Model):
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ingredients')
     food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='ingredients')
-    amount = models.CharField(max_length=64, blank=True)
+    amount = models.CharField(max_length=64, blank=True, null=True)
     unit = models.CharField(max_length=64, blank=True)
     description = models.CharField(max_length=256, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ingredients")   
