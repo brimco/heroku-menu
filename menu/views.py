@@ -201,6 +201,7 @@ def new_recipe(request, info=None):
             new_recipe.ingredients.set(ingredient_objs) 
 
             # save steps
+            data['steps'] = clean_string(data['steps'])
             new_recipe.set_steps(data['steps'])
             new_recipe.save()
             return JsonResponse({"id": new_recipe.id})
@@ -452,7 +453,12 @@ def get_starting_grocery_list(user):
     return json.dumps(lst)
 
 def clean_string(input):
-    return ''.join(n for n in input if (n.isalnum() or n in '!@#$%^&*()-_=+,<.>/?\'";: ')).rstrip()
+    if type(input) == list:
+        new_list = []
+        for each in input:
+            new_list.append(clean_string(each))
+        return new_list
+    return ''.join(n for n in input if (n.isalnum() or n in '!@#$%^&*()-_=+,<.>/?;: ')).rstrip()
 
 def clean_int(input):
     if input == '':

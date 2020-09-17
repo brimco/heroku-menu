@@ -25,7 +25,7 @@ class RecipeInfo extends React.Component {
     }
 
     to_decimal(num) {
-        // whote number
+        // whole number
         if (num == parseInt(num)) {
             return parseInt(num)
         }
@@ -53,6 +53,12 @@ class RecipeInfo extends React.Component {
             let ave = (this.to_decimal(nums[0]) + this.to_decimal(nums[1])) / 2;
             return ave
         }
+        // try to parse float (already a decimal)
+        let float = parseFloat(num)
+        if (!isNaN(float)) {
+            return float
+        }
+
         console.log(`help converting to dec: ${num}`)
         return num
     }
