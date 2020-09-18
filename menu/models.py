@@ -34,7 +34,7 @@ class Category(models.Model):
 
 class Food(models.Model):
     name = models.CharField(max_length=64, unique=True)
-    category = models.ManyToManyField(Category, related_name='foods')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='foods', null=True)
     on_grocery_list = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="foods")   
     objects = models.Manager()

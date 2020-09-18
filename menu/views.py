@@ -46,7 +46,7 @@ def index(request):
     grocery_categories = {}
     for item in Food.objects.filter(user=request.user, on_grocery_list=True).order_by('category__name'):
         category_name = 'Other'
-        if item.category:
+        if item.category and item.category.name:
             category_name = item.category.name
 
         if category_name not in grocery_categories:
@@ -458,7 +458,7 @@ def clean_string(input):
         for each in input:
             new_list.append(clean_string(each))
         return new_list
-    return ''.join(n for n in input if (n.isalnum() or n in '!@#$%^&*()-_=+,<.>/?;: ')).rstrip()
+    return ''.join(n for n in input if (n.isalnum() or n in '!@#$%^*()-_=+,./?;: ')).rstrip()
 
 def clean_int(input):
     if input == '':
