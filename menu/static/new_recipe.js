@@ -418,10 +418,9 @@ function submit_new_recipe(recipe_id=null) {
     .then(response =>  {
         console.log('response: ')
         console.log(response)
-        console.log('json: ')
-        const json = response.json()
-        console.log(json)
-        return json
+        console.log('text: ')
+        console.log(response.text())
+        return response.json()
     })
     .then(json => {
         console.log(`New recipe post response:`)
