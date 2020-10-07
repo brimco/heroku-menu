@@ -415,19 +415,12 @@ function submit_new_recipe(recipe_id=null) {
         method: 'POST',
         body: JSON.stringify(recipe)
     })
-    .then(response =>  {
-        console.log('response: ')
-        console.log(response)
-        console.log('text: ')
-        console.log(response.text())
-        return response.json()
-    })
-    .then(json => {
-        console.log(`New recipe post response:`)
-        console.log(json)
-
-        // location.href = '/recipes/'.concat(json['id']);
-    })
+    // .then(response => response.json())
+    .then(response => response.text())
+    .then(text => console.log(text))
+    // .then(json => {
+    //     location.href = '/recipes/'.concat(json['id']);
+    // })
     .catch(error => {
         console.log(`Error saving new recipe: ${error}`)
     });
