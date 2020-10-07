@@ -418,13 +418,16 @@ function submit_new_recipe(recipe_id=null) {
     .then(response =>  {
         console.log('response: ')
         console.log(response)
-        return response.json()
+        console.log('json: ')
+        const json = response.json()
+        console.log(json)
+        return json
     })
     .then(json => {
         console.log(`New recipe post response:`)
         console.log(json)
 
-        location.href = '/recipes/'.concat(json['id']);
+        // location.href = '/recipes/'.concat(json['id']);
     })
     .catch(error => {
         console.log(`Error saving new recipe: ${error}`)
