@@ -392,9 +392,9 @@ def register(request):
 
 def get_str_recipes(user, id=None, as_dict=False):
     if id:
-        objs = [Recipe.objects.get(user=user, pk=id)]
+        objs = [Recipe.objects.get(pk=id)]
     else:
-        objs = Recipe.objects.filter(user=user).order_by('name')
+        objs = Recipe.objects.all()
     recipe_list = []
     for obj in objs:
         ingredients = []
@@ -413,6 +413,10 @@ def get_str_recipes(user, id=None, as_dict=False):
             info[each] = getattr(obj, each)
             if info[each] == None:
                 info[each] = ''
+        
+        followed = False
+        if user.username in obj.followed_by.all():
+            followed = True
 
         recipe_list.append({
             'id': obj.id,
@@ -423,7 +427,9 @@ def get_str_recipes(user, id=None, as_dict=False):
             'servings': info['servings'],
             'source': obj.source,
             'ingredients': ingredients,
-            'steps': obj.steps
+            'steps': obj.steps,
+            'owner': obj.user.username,
+            'followed': followed
         })
 
     recipe_list.sort(key = lambda i: i['name'])

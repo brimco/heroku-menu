@@ -52,6 +52,7 @@ class Recipe(models.Model):
     str_steps = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recipes")   
     objects = models.Manager()
+    followed_by = models.ManyToManyField(User, related_name='followed_recipes')
 
     def steps_fxn(self):
         # read str_steps and convert to list, and return list

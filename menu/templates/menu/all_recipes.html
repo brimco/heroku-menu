@@ -34,12 +34,14 @@
             const all_recipes = '{{ recipes }}';
             const find_name = '{{ find_name }}';
             const search_tags = '{{ search_tags }}';
+            const username = '{{ request.user.username }}'
 
             function start() {
                 ReactDOM.render(<Search 
-                                    all_recipes={all_recipes} 
-                                    find_name={find_name} 
-                                    search_tags={search_tags} />, 
+                                    all_recipes = {all_recipes} 
+                                    find_name = {find_name} 
+                                    search_tags = {search_tags} 
+                                    user = {username} />, 
                                     document.querySelector('#search'));
                 
                 // click filter button if search_recipes or search_tags

@@ -49,13 +49,17 @@ class Search extends React.Component {
             filter_total_time: false,
             total_time_low: 0,
             total_time_high: 100,
-            sort_by: 'name'
+            sort_by: 'name',
+            show_mine: true,
+            show_followed: true,
+            show_not_followed: false
         }
 
         // preserve "this" so you can use it in the function
         this.handleChange = this.handleChange.bind(this);
         this.handleClickTag = this.handleClickTag.bind(this);
         this.sortBy = this.sortBy.bind(this);
+        this.handleClickOwner = this.handleClickOwner.bind(this)
     }
 
     // filter recipes when first loaded
@@ -90,8 +94,21 @@ class Search extends React.Component {
 
             // check each filter
             for (let recipe of state.all_recipes) {
+
+                // owner
+                let valid_owner = false;
+                if (this.props.user == recipe.owner && this.state.show_mine) {
+                    valid_owner = true
+                } 
+                else if (recipe.followed && this.state.show_followed) {
+                    valid_owner = true
+                }
+                else if (!recipe.followed && this.state.show_not_followed && this.props.user != recipe.owner) {
+                    valid_owner = true
+                }
+
+                // tag
                 let valid_tag;
-                // tags
                 if (state.filter_tags) {
                     valid_tag = false;
                     for (let tag of state.active_tags) {
@@ -159,7 +176,7 @@ class Search extends React.Component {
                 }
 
                 // add to list to show if all are valid
-                if (valid_tag && valid_prep_time && valid_cook_time && valid_total_time && valid_substring) {
+                if (valid_owner && valid_tag && valid_prep_time && valid_cook_time && valid_total_time && valid_substring) {
                     new_recipes_showing.push(recipe);
                 }
             }
@@ -238,6 +255,27 @@ class Search extends React.Component {
         this.update_recipes_showing();
     }
 
+    handleClickOwner(event) {
+        const owner_btn = event.target;
+        const btn_id = owner_btn.id;
+        
+        this.setState(state => {
+            owner_btn.classList.remove('active');
+
+            if (owner_btn.classList.contains('btn-outline-info')) {
+                owner_btn.classList.remove('btn-outline-info');
+                owner_btn.classList.add('btn-info');
+            } else {
+                owner_btn.classList.remove('btn-info');
+                owner_btn.classList.add('btn-outline-info');
+            }
+            return {
+                [btn_id]: !state[btn_id]
+            }
+        }, this.update_recipes_showing)
+        
+    }
+
     render() {
         const results = [];
         const isMobile = is_mobile()
@@ -313,10 +351,18 @@ class Search extends React.Component {
                 title_justify = 'text-center'
             }
 
+            let owner = ''
+            if (recipe['owner'] != this.props.user) {
+                owner = <span className='font-weight-light ml-2'>
+                     ({recipe['owner']})
+                </span>
+            }
+
             results.push(
                 <div key={recipe['id']} className='border p-2 mb-3 rounded row position-relative bg-white'>
                     <span className={'col-sm-6'.concat(' ', title_justify)}>
                         <a href={'recipes/'+recipe['id']} className='stretched-link text-info h4 header-font'>{recipe['name']}</a>
+                        {owner}
                     </span>
                     <span className='col-sm-3'>
                         {prep}
@@ -373,6 +419,26 @@ class Search extends React.Component {
                 <div id='filters' className='collapse border shadow my-3 p-4 rounded'>
                     <h5>Filters</h5>
 
+                    {/* recipe owner */}
+                    <div className='bg-white'>
+                        <div className='border p-2 mb-2'>
+                            <div className="btn-group btn-group-toggle" data-toggle="buttons" onClick={this.handleClickOwner}>
+                                <label className="btn btn-info" id="show_mine">
+                                    <input type="radio"></input> 
+                                    My Recipes
+                                </label>
+                                <label className="btn btn-info" id="show_followed">
+                                    <input type="radio"></input> 
+                                    Followed
+                                </label>
+                                <label className="btn btn-outline-info" id="show_not_followed">
+                                    <input type="radio"></input> 
+                                    Not Followed
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* substring of name */}
                     <div className='bg-white'>
                         <div className='border p-2'>
@@ -407,7 +473,6 @@ class Search extends React.Component {
                 <div className='px-5'>
                     {results}
                 </div>
-
             </div>
         )
     }
