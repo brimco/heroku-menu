@@ -31,6 +31,10 @@ h6,
   text-decoration: none !important;
 }
 
+.hidden {
+  display: none;
+}
+
 @media (max-width: 760px) {
   #newRecipeName,
   #newRecipeName > span,
@@ -55,6 +59,10 @@ h6,
 
   .mobile-hidden {
     display: none;
+  }
+  
+  .mobile-show {
+    display: inline;
   }
 
   .mobile-grow {

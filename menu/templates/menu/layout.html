@@ -37,19 +37,19 @@
                         <div class='row'>    
                             <div class="nav-item">
                                 <a class="nav-link pr-3" href='{% url "menu:recipes" %}'>
-                                    <img src='{% static "/images/book.svg" %}' height="30" width="30">
+                                    <img src='{% static "/images/book.svg" %}' height="30" width="30" class='hidden mobile-show'>
                                     <span class='mobile-hidden'>Recipes</span>
                                 </a>
                             </div>
                             <div class="nav-item">
                                 <a class="nav-link pr-3" href="{% url 'menu:mealplans' %}">
-                                    <img src='{% static "/images/calendar.svg" %}' height="30" width="30">
+                                    <img src='{% static "/images/calendar.svg" %}' height="30" width="30" class='hidden mobile-show'>
                                     <span class='mobile-hidden'>Meal Plans</span>
                                 </a>
                             </div>
                             <div class="nav-item">
                                 <a class="nav-link pr-3" href='{% url "menu:groceries" %}'>
-                                    <img src='{% static "/images/list.svg" %}' height="30" width="30" class='hidden mobile-inline'>
+                                    <img src='{% static "/images/list.svg" %}' height="30" width="30" class='hidden mobile-show'>
                                     <span class='mobile-hidden'>Grocery List</span>
                                 </a>
                             </div>    
