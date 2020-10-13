@@ -417,6 +417,9 @@ class Search extends React.Component {
             <div className='text-center'>
                 {/* Filters */}
                 <div id='filters' className='collapse border shadow my-3 p-4 rounded'>
+                    <button type="button" className="close" aria-label="Close" data-toggle='collapse' data-target='#filters'>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                     <h5>Filters</h5>
 
                     {/* recipe owner */}
