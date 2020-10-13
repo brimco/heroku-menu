@@ -455,19 +455,25 @@ def get_str_recipes(user, id=None, as_dict=False):
     return json.dumps(recipe_list)
 
 def get_starting_grocery_list(user):
-    objs = Food.objects.filter(user=user, on_grocery_list=True).order_by('category__name')
+    objs = Food.objects.filter(user=user).order_by('category__name')
     lst = {}
     for obj in objs:
+        # get category. default = other
         category = 'Other'
         if obj.category and obj.category.name:
             category = obj.category.name
 
+        # add category if not in list
         if category not in lst:
             lst[category] = []
-        lst[category].append({
-            'name': obj.name,
-            'category': category
-        })
+        
+        # add food if on grocery list
+        if obj.on_grocery_list == True:
+            lst[category].append({
+                'name': obj.name,
+                'category': category
+            })
+
     return json.dumps(lst)
 
 def clean_string(input):

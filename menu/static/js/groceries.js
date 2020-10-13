@@ -260,17 +260,20 @@ class GroceryList extends React.Component {
 
         // add all categories
         for (let category in this.state.list) { 
-            groceries.push(
-                <div key={category} className='card p-3'>
-                    <div className='card-block'>
-                        <CategoryList 
-                            name = {category} 
-                            items = {this.state.list[category]} 
-                            handleSortItem = {this.sortItem}
-                        />
+            if (this.state.list[category].length > 0) {
+                groceries.push(
+                    <div key={category} className='card p-3'>
+                        <div className='card-block'>
+                            <CategoryList 
+                                name = {category} 
+                                items = {this.state.list[category]} 
+                                handleSortItem = {this.sortItem}
+                            />
+                        </div>
                     </div>
-                </div>
-            )
+                )
+    
+            }
             category_options.push(
                 <option key={category} value={category}>{category}</option>
             )
