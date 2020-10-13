@@ -79,14 +79,26 @@ def recipes(request):
 @login_required
 def recipe(request, recipe_id):
     if request.method == 'PUT':
-        # delete recipe
         info = json.loads(request.body.decode("utf-8"))
-        Recipe.objects.filter(user=request.user, pk=info['id']).delete()
-        return JsonResponse({'deleted': True})
+
+        if info['todo'] == 'delete':
+            # delete recipe
+            Recipe.objects.filter(user=request.user, pk=info['id']).delete()
+            return JsonResponse({'deleted': True})
+
+        elif info['todo'] == 'follow':
+            Recipe.objects.get(pk=info['recipe_id']).set_following(info['user'], info['is_following'])
+            return JsonResponse({'following': info['is_following']})
+
+    recipe = Recipe.objects.get(pk=recipe_id)
+    follows = False
+    if request.user in recipe.followed_by.all():
+        follows = True
 
     return render(request, 'menu/recipe.html', {
-        'recipe': Recipe.objects.get(user=request.user, pk=recipe_id),
-        'recipe_str': get_str_recipes(request.user, id=recipe_id)
+        'recipe': recipe,
+        'recipe_str': get_str_recipes(request.user, id=recipe_id),
+        'follows': follows
         })
 
 
@@ -285,7 +297,7 @@ def new_meal_plan(request):
             # save recipes (need to get list of objs)
             recipe_objs = []
             for recipe in data['recipes']:
-                recipe_obj = Recipe.objects.get(user=request.user, name=recipe)
+                recipe_obj = Recipe.objects.get(name=recipe)
                 recipe_objs.append(recipe_obj)
 
             meal_plan.recipes.set(recipe_objs)
@@ -293,7 +305,7 @@ def new_meal_plan(request):
         except Exception as err:
             return JsonResponse({'error': err})
     return render(request, 'menu/new_meal_plan.html', {
-        'all_recipes': Recipe.objects.filter(user=request.user).order_by('name')
+        'all_recipes': user_and_followed_recipes(request.user)
     })
 
 @login_required
@@ -415,7 +427,7 @@ def get_str_recipes(user, id=None, as_dict=False):
                 info[each] = ''
         
         followed = False
-        if user.username in obj.followed_by.all():
+        if user in obj.followed_by.all():
             followed = True
 
         recipe_list.append({
@@ -474,3 +486,10 @@ def clean_int(input):
         return out
     except:
         return None
+
+def user_and_followed_recipes(user):
+    recipes = Recipe.objects.all()
+    for recipe in recipes:
+        if user != recipe.user and user not in recipe.followed_by.all():
+            recipes = recipes.exclude(pk=recipe.id)
+    return recipes.order_by('name')

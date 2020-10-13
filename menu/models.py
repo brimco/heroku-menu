@@ -52,7 +52,7 @@ class Recipe(models.Model):
     str_steps = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recipes")   
     objects = models.Manager()
-    followed_by = models.ManyToManyField(User, related_name='followed_recipes')
+    followed_by = models.ManyToManyField(User, related_name='followed_recipes', blank=True)
 
     def steps_fxn(self):
         # read str_steps and convert to list, and return list
@@ -79,6 +79,12 @@ class Recipe(models.Model):
         else:
             return ', '.join([i.food.name for i in ingredients[:(length - 1)]]) + ', and ' + ingredients[length - 1].food.name
 
+    def set_following(self, username, is_following):
+        user = User.objects.get(username=username)
+        if is_following:
+            self.followed_by.add(user)
+        else:
+            self.followed_by.remove(user)
 
     def __str__(self):
         return self.name

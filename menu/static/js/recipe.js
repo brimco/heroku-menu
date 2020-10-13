@@ -250,3 +250,80 @@ class RecipeInfo extends React.Component {
         )
     }
 }
+
+class FollowBtn extends React.Component {
+    constructor(props) {
+        super(props);
+
+        let following = true
+        if (this.props.following == 'False') {
+            following = false
+        }
+
+        this.state = {
+            following: following
+        }
+
+        this.handleClick = this.handleClick.bind(this)
+    }
+
+    handleClick(event) {   
+        // update button 
+        this.setState(state => ({
+            following: !state.following
+        }), () => {
+            // then PUT to database
+            fetch("/recipes/".concat(this.props.recipe_id), {
+                method: 'PUT',
+                body: JSON.stringify({
+                    'todo': 'follow',
+                    'user': this.props.user,
+                    'recipe_id': this.props.recipe_id,
+                    'is_following': this.state.following
+                })
+            })
+        })
+    }
+
+    render() {
+        const btns = []
+        let hidden;
+
+        for (let each of ['Follow', 'Unfollow']) {
+            hidden = false
+            if (each == 'Follow' && this.state.following) {
+                hidden = true
+            }
+            else if (each == 'Unfollow' && !this.state.following) {
+                hidden = true
+            }
+
+            btns.push(
+                <button className="btn btn-outline-info btn-sm" key={each} hidden={hidden} onClick={this.handleClick}>
+                    <img src={this.props.follow_img} height="17" width="17" style={{verticalAlign: '-2px'}} className='p-0 m-0 mr-1'></img>
+                    <span>{each}</span>
+                </button>
+            )
+        }
+        return (
+            <div>
+                {btns}
+            </div>
+        )
+    }
+}
+
+function follow(user, recipe_id) {
+    let is_following;
+
+    // send data via POST to be saved
+    fetch("/recipes/".concat(recipe_id), {
+        method: 'PUT',
+        body: JSON.stringify({
+            'todo': 'follow',
+            'user': user,
+            'recipe_id': recipe_id,
+            'is_following': is_following
+        })
+    })
+}

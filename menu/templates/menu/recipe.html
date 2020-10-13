@@ -10,14 +10,30 @@
     <div class="container text-center rounded border bg-light mt-3">
         <div class="row">
             <span class="col text-left pt-3 px-3">
-                <a class="btn btn-outline-info btn-sm" href="{% url 'menu:edit_recipe' recipe.id %}">
-                    <img src='{% static "images/edit.svg" %}' height="17" width="17" style='vertical-align: -2px' class='p-0 m-0'>
-                    <span class='mobile-hidden'>Edit</span>
-                </a>
-                <button class="btn btn-outline-info btn-sm ml-2" onclick="verify_delete()">
-                    <img src='{% static "images/trash.svg" %}' height="15" width="15" style='vertical-align: -2px' class='p-0 m-0'>
-                    <span class='mobile-hidden'>Delete</span>
-                </button>
+                {% if recipe.user == user %}
+                    <a class="btn btn-outline-info btn-sm" href="{% url 'menu:edit_recipe' recipe.id %}">
+                        <img src='{% static "images/edit.svg" %}' height="17" width="17" style='vertical-align: -2px' class='p-0 m-0'>
+                        <span class='mobile-hidden'>Edit</span>
+                    </a>
+                    <button class="btn btn-outline-info btn-sm ml-2" onclick="verify_delete()">
+                        <img src='{% static "images/trash.svg" %}' height="15" width="15" style='vertical-align: -2px' class='p-0 m-0'>
+                        <span class='mobile-hidden'>Delete</span>
+                    </button>
+                {% else %}
+                    <span id='followBtn'></span>
+                {% endif %}
+                <!-- {% if true %} -->
+                <!-- {% elif user in recipe.followed_by.all %}
+                    <button class="btn btn-outline-info btn-sm" id='Unfollow' onclick="follow('{{ user.username }}', '{{ recipe.id }}')">
+                        <img src='{% static "images/follow.svg" %}' height="17" width="17" style='vertical-align: -2px' class='p-0 m-0'>
+                        <span class='mobile-hidden'>Unfollow</span>
+                    </button>
+                {% else %}
+                    <button class="btn btn-outline-info btn-sm" id='Follow' onclick="follow('{{ user.username }}', '{{ recipe.id }}')">
+                        <img src='{% static "images/follow.svg" %}' height="17" width="17" style='vertical-align: -2px' class='p-0 m-0'>
+                        <span class='mobile-hidden'>Follow</span>
+                    </button>
+                {% endif %} -->
             </span>
             <span class="col text-right pt-3 px-3">
                 <a class="btn btn-outline-info btn-sm" href="{% url 'menu:recipe_groceries' recipe.id %}">
@@ -72,6 +88,7 @@
             fetch(`/recipes/${recipe_id}`, {
                 method: 'PUT',
                 body: JSON.stringify({
+                    todo: 'delete',
                     id: recipe_id
                 })
             })
@@ -83,9 +100,13 @@
     </script>
     <script type='text/babel'>
         const recipe = '{{ recipe_str }}';
+        const follow_img = '{% static "images/follow.svg" %}';
+        const user = '{{ user.username }}'
+        const recipe_id = '{{ recipe.id }}'
 
         function start() {
             ReactDOM.render(<RecipeInfo recipe={recipe} />, document.querySelector('#recipeInfo'));
+            ReactDOM.render(<FollowBtn following='{{ follows }}' follow_img={follow_img} recipe_id={recipe_id} user={user} />, document.querySelector('#followBtn'));
         }
 
         if( document.readyState !== 'loading' ) {
