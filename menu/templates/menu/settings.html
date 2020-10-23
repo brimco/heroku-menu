@@ -1,0 +1,67 @@
+{% extends 'menu/layout.html' %}
+{% load static %}
+
+{% block script %}
+<script src='{% static "js/tools.js" %}' type='text/babel'></script>
+<script src='{% static "js/settings.js" %}' type='text/babel'></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container text-center rounded border bg-light mt-3 p-3">
+        <!-- title -->
+        <h1 class='pt-3'>
+            <img src='{% static "/images/settings.svg" %}' height="40" width="40" style="vertical-align: -5px"> 
+            <span class='mobile-shrink'>Account Settings</span>
+        </h1>
+
+        <div class="accordion" id="settingsAccordian">
+            <!-- grocery list categories -->
+            <div class="card">
+                <div class="card-header bg-white" id="headingOne">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne">
+                        <h5 class="blue">Grocery List Categories</h5>
+                    </button>
+                </div>
+                <div id="collapseOne" class="collapse" data-parent="#settingsAccordian">
+                    <div class="card-body" id='groceryCategories'></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-white" id="headingTwo">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseTwo">
+                        <h5 class="blue">Send Feedback</h5>
+                    </button>
+                </div>
+                <div id="collapseTwo" class="collapse" data-parent="#settingsAccordian">
+                    <div class="card-body" id='groceryCategories'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type='text/babel'>
+        const categories = '{{ categories }}';
+        function start() {
+            ReactDOM.render(<GroceryCategories 
+                                categories={categories} 
+                                up_img = '{% static "/images/up.svg" %}'
+                                down_img = '{% static "/images/down.svg" %}'
+                                trash_img = '{% static "/images/trash.svg" %}'
+                                add_img = '{% static "/images/add.svg" %}'
+                                edit_img = '{% static "/images/edit.svg" %}'
+                                close_img = '{% static "/images/close.svg" %}'
+                                check_img = '{% static "/images/check.svg" %}'
+                                />, 
+                                document.querySelector('#groceryCategories'));
+        }
+
+        if( document.readyState !== 'loading' ) {
+            start();  
+        } else {
+            document.addEventListener('DOMContentLoaded', function () {
+                start();
+            })
+        }
+    </script>
+{% endblock %}

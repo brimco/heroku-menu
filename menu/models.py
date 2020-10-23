@@ -9,7 +9,7 @@ class User(AbstractUser):
     pass
 
 class Tag(models.Model):
-    name = models.CharField(max_length=64, unique=True)
+    name = models.CharField(max_length=64)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tags")   
     objects = models.Manager()
 
@@ -24,8 +24,8 @@ def get_next_order():
         return highest + 1
 
 class Category(models.Model):
-    name = models.CharField(max_length=64, unique=True)
-    order = models.PositiveIntegerField(unique=False, default=get_next_order)
+    name = models.CharField(max_length=64)
+    order = models.PositiveIntegerField(default=get_next_order)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="categories")   
     objects = models.Manager()
 
@@ -33,8 +33,8 @@ class Category(models.Model):
         return self.name
 
 class Food(models.Model):
-    name = models.CharField(max_length=64, unique=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='foods', null=True)
+    name = models.CharField(max_length=64)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='foods', null=True)
     on_grocery_list = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="foods")   
     objects = models.Manager()
@@ -91,7 +91,7 @@ class Recipe(models.Model):
 
 class Ingredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='ingredients')
-    food = models.ForeignKey(Food, on_delete=models.CASCADE, related_name='ingredients')
+    food = models.ForeignKey(Food, on_delete=models.PROTECT, related_name='ingredients')
     amount = models.CharField(max_length=64, blank=True, null=True)
     unit = models.CharField(max_length=64, blank=True)
     description = models.CharField(max_length=256, blank=True)

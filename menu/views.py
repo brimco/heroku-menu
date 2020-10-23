@@ -399,8 +399,46 @@ def register(request):
         return HttpResponseRedirect(reverse("menu:index"))
     return render(request, "menu/register.html")
 
+@csrf_exempt
+def settings(request):
+    if request.method == 'PUT':
+        try:
+            info = json.loads(request.body.decode("utf-8"))['info']
+            if info['todo'] == 'delete':
+                category = Category.objects.get(name=info['category'])
+                category.delete()
+                return JsonResponse({'success': True})  
+            elif info['todo'] == 'add':
+                Category.objects.create(user=request.user, name=info['category'])
+                return JsonResponse({'success': True})  
+            elif info['todo'] == 'reorder':
+                try:
+                    category = Category.objects.get(name=info['category'])
+                except ObjectDoesNotExist:
+                    category = Category.objects.create(name=info['category'], user=request.user, order=info['order'])
+                category.order = info['order']
+                category.save()
+                return JsonResponse({'success': True})  
+            elif info['todo'] == 'rename':
+                category = Category.objects.get(name=info['category'])
+                category.name = info['edited_name']
+                category.save()
+                return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+
+        return JsonResponse({'success': False, 'error': 'todo not found.'})
+
+    return render(request, 'menu/settings.html', {'categories': get_categories(request.user)})
 
 ## tools
+
+def get_categories(user):
+    categories = Category.objects.filter(user=user).order_by('order')
+    lst = [str(category) for category in categories]
+    if 'Other' not in lst: 
+        lst.append('Other')
+    return json.dumps(lst)
 
 def get_str_recipes(user, id=None, as_dict=False):
     if id:

@@ -22,12 +22,17 @@ h6,
   font-family: Comfortaa-Regular, sans-serif;
 }
 
+.blue, .blue:hover {
+  color: #17a2b7;
+  text-decoration-color: #17a2b7;
+}
+
 .nav-link {
   color: gray;
 }
 .nav-link:hover {
   /* color: #f57070; */
-  color: #44a6c4;
+  color: #17a2b7;
   text-decoration: none !important;
 }
 
