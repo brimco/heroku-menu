@@ -222,10 +222,9 @@ class GroceryCategories extends React.Component {
                     <div className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h4>Edit Category Name</h4>
+                                <h4>Edit Category Name: {this.state.category_to_edit</h4>
                             </div>
                             <div className="modal-body">
-                                Original name: {this.state.category_to_edit}
                                 <input className="form-control form-control-sm text-center" autoFocus type="text" value={this.state.edited_name} id='edited_name' onChange={this.handleChange}></input>
                             </div>  
                             <div className="modal-footer">
