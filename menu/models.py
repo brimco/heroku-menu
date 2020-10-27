@@ -125,3 +125,13 @@ class MealPlan(models.Model):
 
     def __str__(self):
         return self.date
+
+class Feedback(models.Model):
+    date = models.DateField(default=date.today)
+    text = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedback')
+    resolved = models.BooleanField(default=False)
+    objects = models.Manager()
+
+    def __str__(self):
+        return f'{self.user}: {self.text[:20]}'

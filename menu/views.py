@@ -10,7 +10,7 @@ from datetime import date
 import json
 import random
 
-from .models import User, Tag, Category, Food, Ingredient, Recipe, MealPlan
+from .models import User, Tag, Category, Food, Ingredient, Recipe, MealPlan, Feedback
 
 # Create your views here.
 
@@ -426,8 +426,10 @@ def settings(request):
                 return JsonResponse({'success': True})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
-
-        return JsonResponse({'success': False, 'error': 'todo not found.'})
+    elif request.method == 'POST':
+        text = request.POST['text']
+        Feedback.objects.create(user=request.user, text=text)
+        return render(request, 'menu/settings.html', {'categories': get_categories(request.user), 'message': '✓ Feedback sent. Thank you!', 'show': '#collapseTwo'})
 
     return render(request, 'menu/settings.html', {'categories': get_categories(request.user)})
 

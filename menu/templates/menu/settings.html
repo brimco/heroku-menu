@@ -34,7 +34,22 @@
                     </button>
                 </div>
                 <div id="collapseTwo" class="collapse" data-parent="#settingsAccordian">
-                    <div class="card-body" id='groceryCategories'></div>
+                    <div class="card-body">
+                        <p>Help me fix all the bugs! I'd love to hear about any problems/suggestions/things to add. Thanks!</p>
+
+                        <form action='{% url "menu:settings" %}' method="post">
+                            {% csrf_token %}
+                            <textarea name="text" rows=5 class='form-control'></textarea><br>
+
+                            {% if message %}
+                                <p class='alert-success p-2 d-inline-block'>{{ message }}</p><br>
+                            {% endif %}
+
+                            <input type="submit" value="Submit" class="btn btn-info">
+                        </form>
+
+                        
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,6 +69,9 @@
                                 check_img = '{% static "/images/check.svg" %}'
                                 />, 
                                 document.querySelector('#groceryCategories'));
+            if ('{{ show }}') {
+                $('{{ show }}').collapse('show')
+            }
         }
 
         if( document.readyState !== 'loading' ) {
