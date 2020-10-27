@@ -96,7 +96,7 @@ def index(request):
         }, {
             'name': 'Recipes',
             'url': '/admin/menu/recipe',
-            'count': MealPlan.objects.all().count()
+            'count': Recipe.objects.all().count()
         }, {
             'name': 'Meal Plans',
             'url': '/admin/menu/mealplan',
