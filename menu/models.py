@@ -124,7 +124,7 @@ class MealPlan(models.Model):
             self.date = new_date
 
     def __str__(self):
-        return self.date
+        return str(self.date)
 
 class Feedback(models.Model):
     date = models.DateField(default=date.today)
