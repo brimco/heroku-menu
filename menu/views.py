@@ -59,11 +59,73 @@ def index(request):
     if len(all_recipes) > 0:
         random_recipe = get_str_recipes(request.user, id=random.choice(all_recipes).id)
 
-    return render(request, 'menu/index.html', {
+    context = {
         'random_recipe': random_recipe,
         'upcoming_meal_plan': plan,
-        'grocery_categories': json.dumps(grocery_categories)
-    })
+        'grocery_categories': json.dumps(grocery_categories),
+    }
+
+    if request.user.is_superuser:
+        # feedback
+        feedback = []
+        for f in Feedback.objects.filter(resolved=False).order_by('date'):
+            feedback.append({
+                'user': f.user.username,
+                'message': f.text[:25],
+                'date': f.date,
+                'url': f'/admin/menu/feedback/{f.id}/change/'
+            })
+        context['feedback'] = feedback
+
+        # users
+        users = []
+        for user in User.objects.all():
+            users.append({
+                'name': user.username,
+                'last_login': user.last_login,
+                'url': f'/admin/menu/user/{user.id}/change/'
+            })
+        users.sort(key = lambda i: i['last_login'], reverse=True)
+        context['users'] = users
+
+        # database info
+        database_info = [{
+            'name': 'Users',
+            'url': '/admin/menu/user',
+            'count': User.objects.all().count()
+        }, {
+            'name': 'Recipes',
+            'url': '/admin/menu/recipe',
+            'count': MealPlan.objects.all().count()
+        }, {
+            'name': 'Meal Plans',
+            'url': '/admin/menu/mealplan',
+            'count': MealPlan.objects.all().count()
+        }, {
+            'name': 'Food',
+            'url': '/admin/menu/food',
+            'count': Food.objects.all().count()
+        }, {
+            'name': 'Ingredients',
+            'url': '/admin/menu/ingredient',
+            'count': Ingredient.objects.all().count()
+        }, {
+            'name': 'Categories',
+            'url': '/admin/menu/category',
+            'count': Category.objects.all().count()
+        }, {
+            'name': 'Tags',
+            'url': '/admin/menu/tag',
+            'count': Tag.objects.all().count()
+        }, {
+            'name': 'Feedback',
+            'url': '/admin/menu/feedback',
+            'count': Feedback.objects.all().count()
+        }]
+        database_info.sort(key = lambda i: i['name'])
+        context['database_info'] = database_info
+
+    return render(request, 'menu/index.html', context)
 
 @login_required
 def recipes(request):

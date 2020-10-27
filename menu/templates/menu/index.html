@@ -72,4 +72,79 @@
     </div>
 </div>
 
+<!-- superuser section -->
+{% if request.user.is_superuser %}
+    <div class="row m-3">
+        <!-- feedback -->
+        <div class="col-md container text-center rounded border bg-light m-2 p-2">
+            <a href='/admin/menu/feedback' class="text-info h2" target="_blank">
+                <h3 class="d-inline">Feedback</h3>
+            </a>
+            <table class='table table-hover table-sm mt-2'>
+                <thead>
+                    <tr class="header-font">
+                        <th>Feedback</th>
+                        <th>User</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in feedback %}
+                        <tr>
+                            <td><a href='{{ f.url }}' target="_blank" class='blue'>{{ f.message }}</a></td>
+                            <td>{{ f.user }}</td>
+                            <td>{{ f.date }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- users -->
+        <div class="col-md container text-center rounded border bg-light m-2 p-2">
+            <a href='/admin/menu/user' class="text-info h2" target="_blank">
+                <h3 class="d-inline">Users</h3>
+            </a>
+            <table class='table table-hover table-sm mt-2'>
+                <thead>
+                    <tr class="header-font">
+                        <th>Username</th>
+                        <th>Last Login</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td><a href='{{ user.url }}' target='_blank' class='blue'>{{ user.name }}</a></td>
+                            <td>{{ user.last_login }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md container text-center rounded border bg-light m-2 p-2">
+            <a href='/admin/menu/' class="text-info h2" target="_blank">
+                <h3 class="d-inline">Database</h3>
+            </a>
+            <table class='table table-hover table-sm mt-2'>
+                <thead>
+                    <tr class="header-font">
+                        <th>Table</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for table in database_info %}
+                        <tr>
+                            <td><a href='{{ table.url }}' target='_blank' class='blue'>{{ table.name }}</a></td>
+                            <td>{{ table.count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock %}
