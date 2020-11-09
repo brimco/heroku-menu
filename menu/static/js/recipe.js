@@ -187,9 +187,16 @@ class RecipeInfo extends React.Component {
         } 
         // source
         if (this.state.recipe.source) {
-            info_line.push(
-                <div key='source' className='col-sm m-2'>Source: {this.state.recipe.source}</div> 
-            )
+            try {
+                const url = new URL(this.state.recipe.source)
+                info_line.push(
+                    <div key='source' className='col-sm m-2'>Source: <a href={this.state.recipe.source}>{url.hostname}</a></div> 
+                )
+            } catch {
+                info_line.push(
+                    <div key='source' className='col-sm m-2'>Source: {this.state.recipe.source}</div> 
+                )
+            }
         }
 
         // ingredients
