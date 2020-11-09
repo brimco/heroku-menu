@@ -192,7 +192,7 @@ class RecipeInfo extends React.Component {
                 info_line.push(
                     <div key='source' className='col-sm m-2'>Source: <a href={this.state.recipe.source}>{url.hostname}</a></div> 
                 )
-            } catch {
+            } catch(TypeError) {
                 info_line.push(
                     <div key='source' className='col-sm m-2'>Source: {this.state.recipe.source}</div> 
                 )
