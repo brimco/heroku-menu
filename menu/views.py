@@ -219,7 +219,7 @@ def new_recipe(request, info=None):
             for tag in data['tags']:
                 tag = clean_string(tag)
                 try: 
-                    tag_obj = Tag.objects.get(user=request.user, name=tag)
+                    tag_obj = Tag.objects.get(user=request.user, name__iexact=tag)
                 except ObjectDoesNotExist:
                     tag_obj = Tag(name=tag, user=request.user)
                     tag_obj.save()
@@ -294,7 +294,7 @@ def groceries(request):
         # clean info
         info['name'] = clean_string(info['name'])
 
-        obj = Food.objects.get_or_create(user=request.user, name=info['name'], defaults={'name': info['name'], 'user': request.user})[0] 
+        obj = Food.objects.get_or_create(user=request.user, name__iexact=info['name'], defaults={'name': info['name'], 'user': request.user})[0] 
         was_added = False
         if 'on_grocery_list' in info:
             if obj.on_grocery_list == False:
@@ -467,7 +467,7 @@ def settings(request):
         try:
             info = json.loads(request.body.decode("utf-8"))['info']
             if info['todo'] == 'delete':
-                category = Category.objects.get(name=info['category'])
+                category = Category.objects.get(name__iexact=info['category'])
                 category.delete()
                 return JsonResponse({'success': True})  
             elif info['todo'] == 'add':
@@ -475,14 +475,14 @@ def settings(request):
                 return JsonResponse({'success': True})  
             elif info['todo'] == 'reorder':
                 try:
-                    category = Category.objects.get(name=info['category'])
+                    category = Category.objects.get(name__iexact=info['category'])
                 except ObjectDoesNotExist:
                     category = Category.objects.create(name=info['category'], user=request.user, order=info['order'])
                 category.order = info['order']
                 category.save()
                 return JsonResponse({'success': True})  
             elif info['todo'] == 'rename':
-                category = Category.objects.get(name=info['category'])
+                category = Category.objects.get(name__iexact=info['category'])
                 category.name = info['edited_name']
                 category.save()
                 return JsonResponse({'success': True})
