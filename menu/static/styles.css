@@ -109,6 +109,9 @@ body {
   padding: 1em;
 }
 
+.strikethrough {
+  list-style-position: outside;
+}
 .strikethrough:checked + span{
   text-decoration: line-through;
   color: rgb(177, 177, 177);
@@ -128,8 +131,4 @@ body {
   background-color: white;
   color: #17A2B7;
   border-color: #17A2B7;
-}
-
-ul, ol {
-  list-style-position: outside;
 }
