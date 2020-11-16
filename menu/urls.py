@@ -20,5 +20,6 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
-    path("settings", views.settings, name='settings')
+    path("settings", views.settings, name='settings'),
+    path("addtogroceries/<str:username>/<str:item_to_add>", views.add_to_groceries, name='add_to_groceries')  # route to add from ios shortcuts
 ]

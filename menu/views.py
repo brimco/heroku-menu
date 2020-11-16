@@ -495,6 +495,17 @@ def settings(request):
 
     return render(request, 'menu/settings.html', {'categories': get_categories(request.user)})
 
+def add_to_groceries(request, username, item_to_add):
+    # get user
+    user = User.objects.get(username=username)
+
+    # get or create item
+    item = Food.objects.get_or_create(user=user, name__iexact=item_to_add, defaults={'name': item_to_add, 'user': user})[0] 
+
+    # mark item as on list & save
+    item.on_grocery_list = True
+    item.save()
+
 ## tools
 
 def get_categories(user):
