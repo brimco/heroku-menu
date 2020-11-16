@@ -505,6 +505,7 @@ def add_to_groceries(request, username, item_to_add):
     # mark item as on list & save
     item.on_grocery_list = True
     item.save()
+    return HttpResponse(f'{item_to_add} was add to your grocery list')
 
 ## tools
 
