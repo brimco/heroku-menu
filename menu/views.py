@@ -495,20 +495,27 @@ def settings(request):
 
     return render(request, 'menu/settings.html', {'categories': get_categories(request.user)})
 
-def add_to_groceries(request, username, item_to_add):
-    try:
-        # get user
-        user = User.objects.get(username=username)
+def add_to_groceries(request):
+    if request.method == 'PUT':
+        try:
+            info = json.loads(request.body.decode("utf-8"))
 
-        # get or create item
-        item = Food.objects.get_or_create(user=user, name__iexact=item_to_add, defaults={'name': item_to_add, 'user': user})[0] 
+            # get user
+            user = User.objects.get(username=info['username'])
 
-        # mark item as on list & save
-        item.on_grocery_list = True
-        item.save()
-        return HttpResponse(f'{item_to_add} was add to your grocery list')
-    except Exception as err:
-        return HttpResponse(f"Error adding {item_to_add} to {username}'s list: {err}")
+            # get item
+            item_name = clean_string(info['item'])
+            item = Food.objects.get_or_create(user=user, name__iexact=item_name, defaults={'name': item_name, 'user': user})[0] 
+
+            # mark item as on list & save
+            item.on_grocery_list = True
+            item.save()
+
+            return JsonResponse({"success": True})
+
+        except Exception as err:
+            return JsonResponse({"success": False, 'error': err})
+    return JsonResponse({"success": False, 'error': 'not a put request'})
 
 ## tools
 
