@@ -109,9 +109,6 @@ body {
   padding: 1em;
 }
 
-.strikethrough {
-  list-style-position: outside;
-}
 .strikethrough:checked + span{
   text-decoration: line-through;
   color: rgb(177, 177, 177);

@@ -26,22 +26,6 @@ function fillRandomRecipe(random_recipe_str) {
             container.appendChild(cook);
         }
 
-        // servings
-        if (random_recipe.servings) {
-            const servings = document.createElement('p');
-            servings.innerText = 'Servings: '.concat(random_recipe.servings);
-            servings.classList = 'p-0 m-0 font-weight-light';
-            container.appendChild(servings);
-        }
-
-        //source
-        if (random_recipe.source) {
-            const source = document.createElement('p');
-            source.innerText = 'Source: '.concat(random_recipe.source);
-            source.classList = 'p-0 m-0 font-weight-light';
-            container.appendChild(source);
-        }
-
         // ingredients
         const ingredients_label = document.createElement('h6');
         ingredients_label.innerText = 'Ingredients';
@@ -54,24 +38,6 @@ function fillRandomRecipe(random_recipe_str) {
             ingredient.innerText = i.string;
             ingredient.classList = 'font-weight-light m-0'
             container.appendChild(ingredient);
-        }
-
-        // steps
-        if (random_recipe.steps.length > 0) {
-            const steps_label = document.createElement('h6');
-            steps_label.innerText = 'Steps';
-            steps_label.classList = 'mt-3'
-            container.appendChild(steps_label);
-        }
-
-        let step;
-        let count = 1;
-        for (let s of random_recipe.steps) {
-            step = document.createElement('p');
-            step.innerText = ''.concat(count, '. ', s);
-            step.classList = 'font-weight-light m-0';
-            container.appendChild(step);
-            count++;
         }
     } else {
         const label = document.createElement('h6');
