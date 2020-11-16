@@ -495,6 +495,7 @@ def settings(request):
 
     return render(request, 'menu/settings.html', {'categories': get_categories(request.user)})
 
+@csrf_exempt
 def add_to_groceries(request):
     if request.method == 'PUT':
         try:
