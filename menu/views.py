@@ -505,18 +505,27 @@ def add_to_groceries(request):
             user = User.objects.get(username=info['username'])
 
             # get item
-            item_name = clean_string(info['item'])
-            item = Food.objects.get_or_create(user=user, name__iexact=item_name, defaults={'name': item_name, 'user': user})[0] 
+            if type(info['item']) == list:
+                for item in info['item']:
+                    item_name = clean_string(item)
+                    item = Food.objects.get_or_create(user=user, name__iexact=item_name, defaults={'name': item_name, 'user': user})[0] 
 
-            # mark item as on list & save
-            item.on_grocery_list = True
-            item.save()
+                    # mark item as on list & save
+                    item.on_grocery_list = True
+                    item.save()
+            else:
+                item_name = clean_string(info['item'])
+                item = Food.objects.get_or_create(user=user, name__iexact=item_name, defaults={'name': item_name, 'user': user})[0] 
 
-            return JsonResponse({"success": True})
+                # mark item as on list & save
+                item.on_grocery_list = True
+                item.save()
+
+            return HttpResponse(f'{item_name} was added to your grocer list')
 
         except Exception as err:
-            return JsonResponse({"success": False, 'error': err})
-    return JsonResponse({"success": False, 'error': 'not a put request'})
+            return HttpResponse(f'Problem adding {item_name} to your grocery list: {err}')
+    return HttpResponse(f'Problem adding {item_name} to your grocery list: Needs to be a PUT request')
 
 ## tools
 
